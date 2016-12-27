@@ -4,6 +4,12 @@ public class PersonAddress {
 
     private PersonAddressStreet street;
 
+    public PersonAddress(){}
+
+    public PersonAddress(PersonAddressStreet street){
+        this.street = street;
+    }
+
     public PersonAddressStreet getStreet() {
         return street;
     }

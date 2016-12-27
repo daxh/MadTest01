@@ -10,6 +10,15 @@ public class Person {
 
     private PersonAddress address;
 
+    public Person(){}
+
+    public Person(String firstName, String secondName, int age, PersonAddress personAddress){
+        this.firstName = firstName;
+        this.secondName = secondName;
+        this.age = age;
+        address = personAddress;
+    }
+
     public String getFirstName() {
         return firstName;
     }
