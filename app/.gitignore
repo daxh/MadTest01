@@ -1,0 +1,5 @@
+# Gradle generated files
+build/
+
+# Intellij User-specific configurations
+*.iml
