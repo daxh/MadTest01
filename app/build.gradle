@@ -26,4 +26,10 @@ dependencies {
 
     // Pretty Logger
     compile 'com.orhanobut:logger:1.15'
+
+    // LSA (Light-weight Stream API)
+    // This great lib provides access to some Java 8
+    // features (like Optionals, Strem API) that by
+    // default not available on Android
+    compile 'com.annimon:stream:1.1.2'
 }
