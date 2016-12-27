@@ -12,7 +12,8 @@ buildscript {
     }
 }
 
-// Adds support for Java 8 Lambdas
+// Java 8 lambdas support
+// Connecting to retrolambda repo
 buildscript {
     repositories {
         mavenCentral()
@@ -28,7 +29,8 @@ allprojects {
         jcenter()
     }
 
-    // Adds support for Java 8 Lambdas
+    // Java 8 lambdas support
+    // Pointing to use maven central repo too
     repositories {
         mavenCentral()
     }
