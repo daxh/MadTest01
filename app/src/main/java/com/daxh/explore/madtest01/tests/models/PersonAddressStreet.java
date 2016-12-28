@@ -18,4 +18,10 @@ public class PersonAddressStreet {
         this.streetName = streetName;
     }
 
+    @Override
+    public String toString() {
+        String s = super.toString();
+        if (streetName != null) s += " " + streetName;
+        return s;
+    }
 }

@@ -1,5 +1,7 @@
 package com.daxh.explore.madtest01.tests.models;
 
+import java.util.Locale;
+
 public class Person {
 
     private String firstName;
@@ -51,4 +53,12 @@ public class Person {
         this.address = address;
     }
 
+    @Override
+    public String toString() {
+        String s = super.toString();
+        s += String.format(Locale.ENGLISH, " %s %s %d", firstName, secondName, age);
+        if (address != null && address.getStreet() != null && address.getStreet().getStreetName() != null)
+            s += " " + address.getStreet().getStreetName();
+        return s;
+    }
 }
