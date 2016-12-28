@@ -12,6 +12,14 @@ public class OptPerson {
 
     private Optional<OptPersonAddress> address = Optional.empty();
 
+    private Optional<Runnable> workDoneCallback = Optional.empty();
+
+    public OptPerson(){}
+
+    public OptPerson(Runnable workDoneCallback){
+        this.workDoneCallback = Optional.ofNullable(workDoneCallback);
+    }
+
     public Optional<String> getFirstName() {
         return firstName;
     }
@@ -44,4 +52,15 @@ public class OptPerson {
         this.address = Optional.ofNullable(address);
     }
 
+    public void doSomeWork(){
+        // something something
+
+        workDoneCallback.ifPresent(Runnable::run);
+    }
+
+    public void doSomeWork(Runnable workDoneCallback){
+        // something something
+
+        Optional.ofNullable(workDoneCallback).ifPresent(Runnable::run);
+    }
 }
