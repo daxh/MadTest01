@@ -5,7 +5,7 @@ import com.orhanobut.logger.Settings;
 
 public class LoggerUtils {
 
-    public static final String TAG = "mad";
+    public static final String TAG = "mad_tag";
 
     public static void brief(){
         configureLogger(TAG, 0, false);
