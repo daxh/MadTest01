@@ -1,8 +1,13 @@
 apply plugin: 'com.android.application'
 
+// Java 8 lambdas support
+// Applying plugin
+apply plugin: 'me.tatarka.retrolambda'
+
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
+
     defaultConfig {
         applicationId "com.daxh.explore.madtest01"
         minSdkVersion 16
@@ -10,6 +15,16 @@ android {
         versionCode 1
         versionName "1.0"
     }
+
+    // Java 8 lambdas support
+    // We need to notify Android Studio about
+    // this Java 8 like features to let it properly
+    // display (or mute) related warning
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -26,4 +41,10 @@ dependencies {
 
     // Pretty Logger
     compile 'com.orhanobut:logger:1.15'
+
+    // LSA (Light-weight Stream API)
+    // This great lib provides access to some Java 8
+    // features (like Optionals, Strem API) that by
+    // default not available on Android
+    compile 'com.annimon:stream:1.1.2'
 }

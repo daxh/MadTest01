@@ -1,4 +1,4 @@
-package com.daxh.explore.madtest01.Utils;
+package com.daxh.explore.madtest01.utils;
 
 import com.orhanobut.logger.Logger;
 import com.orhanobut.logger.Settings;
