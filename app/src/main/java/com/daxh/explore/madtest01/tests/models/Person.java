@@ -61,4 +61,20 @@ public class Person {
             s += " " + address.getStreet().getStreetName();
         return s;
     }
+
+    public static class Settings {
+        public Person mUser;
+
+        public Settings(Person person) {
+            mUser = person;
+        }
+    }
+
+    public static class Message {
+        public Person mUser;
+
+        public Message(Person user) {
+            mUser = user;
+        }
+    }
 }
