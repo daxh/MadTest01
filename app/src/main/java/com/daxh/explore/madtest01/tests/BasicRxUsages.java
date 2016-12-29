@@ -24,8 +24,9 @@ public class BasicRxUsages {
             rxAndLongRunningTaskWithResult(false);
             rxAndLongRunningTaskVoid(false);
             combiningFewTasksWhichDependsOnEachOtherInSerial(false);
-            combiningFewTasksWhichDependsOnEachOtherInParallel(true);
+            combiningFewTasksWhichDependsOnEachOtherInParallel(false);
             forwardingExceptionsToSubscriber(false);
+            detailedErrorHandling(true);
         }
     }
 
@@ -238,6 +239,121 @@ public class BasicRxUsages {
                     },
                     // onCompleted
                     () -> Logger.d("DONE")
+                );
+
+        // More error handling operators
+        // could be found here:
+        // https://github.com/ReactiveX/RxJava/wiki/Error-Handling-Operators
+    }
+
+    private static void detailedErrorHandling(boolean runTest) {
+        if (!runTest) return;
+
+        Observable
+                // This operator accepts Callable.call function
+                // that rethrows checked exceptions that's why
+                // we don't need any additional try/catch blocks
+                // or error handling operators
+                .fromCallable(() -> getNewPersonOrError(1))
+                // Retry operation above for 3 times before
+                // fallback into subscribers's onError
+                .retry(3)
+                .subscribeOn(Schedulers.io())
+                .doOnSubscribe(() -> Logger.d("Point #1"))
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(person -> {
+                    double random = Math.random();
+
+                    if (random < .25){
+                        Logger.d("EXCEPTION1: " + "Point #2 " + person);
+                        try {
+                            throw new IOException("Point #2 " + person);
+                        } catch (IOException e) {
+                            // If you forced to catch checked exceptions
+                            // inside operator then we could use the
+                            // following to downstream them to subscriber
+                            throw Exceptions.propagate(e);
+                        }
+                    }
+
+                    if (random < .5){
+                        Logger.d("EXCEPTION2: " + "Point #2 " + person);
+                        // Unchecked exceptions will be sent
+                        // downstream to subscriber by default
+                        throw new RuntimeException("Point #2 " + person);
+                    }
+
+                    Logger.d("Point #2 " + person);
+                })
+                // Retry operation above when Runtime
+                // Exception happened. In other cases
+                // fallback into subscribers's onError
+                .retryWhen(observable -> observable.flatMap(throwable -> {
+                    if ((throwable instanceof RuntimeException)) {
+                        Logger.d("RETRY: Point #2");
+                        // Generate another dumb Observable
+                        // to lead 'retryWhen' to resubscribe
+                        // on source Observable once again
+                        return Observable.just(null);
+                    }
+
+                    // Generate Observable with error
+                    // to lead 'retryWhen' to fallback
+                    // to subscribers onError
+                    Logger.d("FALLBACK: Point #2");
+                    return Observable.error(throwable);
+                }))
+                .observeOn(Schedulers.io())
+                .flatMap(user -> {
+                    Logger.d("Point #3");
+                    return Observable.zip(
+                            Observable
+                                    // This operator accepts Callable.call function
+                                    // that rethrows checked exceptions that's why
+                                    // we don't need any additional try/catch blocks
+                                    // or error handling operators. Works when inside
+                                    // 'zip' too.
+                                    .fromCallable(() -> fetchPersonSettingsOrError(user))
+                                    .subscribeOn(Schedulers.io())
+                                    // Generate some default value in case of error
+                                    .onErrorReturn(throwable -> {
+                                        Logger.d("DEFAULT: fetchPersonSettingsOrError");
+                                        return new Person.Settings(user);
+                                    }),
+                            Observable
+                                    // This operator accepts Callable.call function
+                                    // that rethrows checked exceptions that's why
+                                    // we don't need any additional try/catch blocks
+                                    // or error handling operators. Works when inside
+                                    // 'zip' too.
+                                    .fromCallable(() -> fetchPersonMessagesOrError(user))
+                                    .subscribeOn(Schedulers.io())
+                                    // Generate empty list in case of error
+                                    .onErrorReturn(throwable -> {
+                                        Logger.d("DEFAULT: fetchPersonSettingsOrError");
+                                        return new ArrayList<>();
+                                    }),
+                            Pair::create);
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(settingsMsgsListPair ->
+                        Logger.d("Point #4 " + settingsMsgsListPair))
+                .flatMap(settingsMsgsListPair -> {
+                    Logger.d("Point #5 " + settingsMsgsListPair);
+                    return Observable.from(settingsMsgsListPair.second);
+                })
+                .subscribe(
+                        // onNext
+                        message -> Logger.d("Point #6"),
+                        // onError
+                        throwable -> {
+                            // All exceptions could be processed
+                            // in one place - here, if this is a
+                            // desirable behavior
+                            Logger.d("onError " + throwable.getMessage());
+                        },
+                        // onCompleted
+                        () -> Logger.d("DONE")
                 );
 
         // More error handling operators
