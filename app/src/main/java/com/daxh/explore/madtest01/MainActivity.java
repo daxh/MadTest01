@@ -3,6 +3,7 @@ package com.daxh.explore.madtest01;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.daxh.explore.madtest01.tests.BasicRxUsages;
 import com.daxh.explore.madtest01.tests.LambdasUsages;
 import com.daxh.explore.madtest01.tests.OptionalUsages;
 import com.daxh.explore.madtest01.tests.StreamsUsages;
@@ -16,8 +17,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         LoggerUtils.brief();
 
-        OptionalUsages.start(true);
-        StreamsUsages.start(true);
-        LambdasUsages.start(true);
+        OptionalUsages.start(false);
+        StreamsUsages.start(false);
+        LambdasUsages.start(false);
+        BasicRxUsages.start(true);
     }
 }
