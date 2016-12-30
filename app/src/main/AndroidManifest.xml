@@ -28,6 +28,10 @@
             android:name=".activities.LambdasUsagesActivity"
             android:label="@string/title_lambdas_usages"/>
 
+        <activity
+            android:name=".activities.BasicRxUsagesActivity"
+            android:label="@string/title_lambdas_usages"/>
+
     </application>
 
 </manifest>

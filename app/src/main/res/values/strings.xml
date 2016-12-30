@@ -21,4 +21,10 @@
     <string name="bt_lambdas_as_variables">LAMBDAS AS VARIABLES</string>
     <string name="bt_lambdas_and_classes">LAMBDAS AND CLASSES</string>
     <string name="bt_lambdas_as_args">LAMBDAS AS ARGS</string>
+    <string name="bt_long_run_task_with_res">LONG RUNNING TASK WITH RESULT</string>
+    <string name="bt_long_run_void_task">LONG RUNNING VOID TASK</string>
+    <string name="bt_few_long_running_related_parallel_tasks">FEW LONG RUNNING IN SERIAL RELATED TASKS</string>
+    <string name="bt_few_long_running_related_serial_and_parallel_tasks">FEW LONG RUNNING RELATED SERIAL AND PARALLEL TSASKS</string>
+    <string name="bt_downstream_all_exceptions_to_subscriber">DOWNSTREAM ALL EXCEPTIONS TO SUBSCRIBER</string>
+    <string name="bt_detailed_error_handling">DETAILED ERROR HANDLING</string>
 </resources>

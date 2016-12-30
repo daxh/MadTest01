@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.daxh.explore.madtest01.R;
-import com.daxh.explore.madtest01.tests.BasicRxUsages;
 import com.daxh.explore.madtest01.utils.LoggerUtils;
 
 import static com.daxh.explore.madtest01.utils.BindingUtils.bindButton;
@@ -21,7 +20,6 @@ public class MainActivity extends AppCompatActivity {
         bindButton(this, R.id.btOptionals, () -> new Intent(this, OptionalsUsagesActivity.class));
         bindButton(this, R.id.btLambdas, () -> new Intent(this, LambdasUsagesActivity.class));
         bindButton(this, R.id.btStreams, () -> new Intent(this, StreamsUsagesActivity.class));
-
-        BasicRxUsages.start(true);
+        bindButton(this, R.id.btBasicRx, () -> new Intent(this, BasicRxUsagesActivity.class));
     }
 }
