@@ -27,4 +27,12 @@
     <string name="bt_few_long_running_related_serial_and_parallel_tasks">FEW LONG RUNNING RELATED SERIAL AND PARALLEL TSASKS</string>
     <string name="bt_downstream_all_exceptions_to_subscriber">DOWNSTREAM ALL EXCEPTIONS TO SUBSCRIBER</string>
     <string name="bt_detailed_error_handling">DETAILED ERROR HANDLING</string>
+    <string name="bt_rx_and_ui">RX &amp; UI</string>
+    <string name="rx_ui_activity_purpose">The purpose of this activity is to understand
+        how we could combine Rx and such common UI tasks as clicks, text editing,
+        showing progress and so on. Also we need to take into consideration such aspects
+        as Rx and memory/context leaking. Right now we not taking into consideration
+        Rx and restoration of view states or background tasks after configuration changes</string>
+    <string name="hint_phone_number">Phone number</string>
+    <string name="bt_start">START</string>
 </resources>

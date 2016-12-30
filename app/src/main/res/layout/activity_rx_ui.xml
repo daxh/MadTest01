@@ -12,34 +12,23 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.daxh.explore.madtest01.activities.MainActivity">
 
-    <Button
-        android:id="@+id/btOptionals"
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/bt_optionals"/>
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+        android:text="@string/rx_ui_activity_purpose"/>
+
+    <EditText
+        android:id="@+id/etPhoneNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_phone_number"
+        tools:ignore="TextFields"/>
 
     <Button
-        android:id="@+id/btLambdas"
+        android:id="@+id/btStart"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/bt_lambdas"/>
-
-    <Button
-        android:id="@+id/btStreams"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/bt_streams"/>
-
-    <Button
-        android:id="@+id/btBasicRx"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/bt_basic_rx"/>
-
-    <Button
-        android:id="@+id/btRxAndUI"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/bt_rx_and_ui"/>
+        android:text="@string/bt_start"/>
 
 </LinearLayout>
