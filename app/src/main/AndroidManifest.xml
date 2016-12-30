@@ -8,13 +8,30 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".activities.OptionalsUsagesActivity"
+            android:label="@string/title_optional_usages"/>
+
+        <activity
+            android:name=".activities.StreamsUsagesActivity"
+            android:label="@string/title_streams_usages"/>
+
+        <activity
+            android:name=".activities.LambdasUsagesActivity"
+            android:label="@string/title_lambdas_usages"/>
+
+        <activity
+            android:name=".activities.BasicRxUsagesActivity"
+            android:label="@string/title_lambdas_usages"/>
+
     </application>
 
 </manifest>

@@ -5,7 +5,6 @@ import android.support.v4.util.Pair;
 import com.daxh.explore.madtest01.tests.models.Person;
 import com.daxh.explore.madtest01.tests.models.PersonAddress;
 import com.daxh.explore.madtest01.tests.models.PersonAddressStreet;
-import com.daxh.explore.madtest01.utils.LoggerUtils;
 import com.orhanobut.logger.Logger;
 
 import java.io.IOException;
@@ -18,24 +17,9 @@ import rx.schedulers.Schedulers;
 
 public class BasicRxUsages {
 
-    public static void start(boolean b) {
-        if (b) {
-            LoggerUtils.explicit();
-            rxAndLongRunningTaskWithResult(false);
-            rxAndLongRunningTaskVoid(false);
-            combiningFewTasksWhichDependsOnEachOtherInSerial(false);
-            combiningFewTasksWhichDependsOnEachOtherInParallel(false);
-            forwardingExceptionsToSubscriber(false);
-            detailedErrorHandling(true);
-        }
-    }
-
-    private static void rxAndLongRunningTaskWithResult(boolean runTest) {
+    public static void rxAndLongRunningTaskWithResult() {
         // Don't use Observable.create
         // https://artemzin.com/blog/rxjava-defer-execution-of-function-via-fromcallable/
-
-        if (!runTest) return;
-
         Observable.fromCallable(BasicRxUsages::longRunningTask)
                 .subscribeOn(Schedulers.newThread())            // each time new separate thread
 //            .subscribeOn(Schedulers.io())                     //  or use IO thread
@@ -49,12 +33,9 @@ public class BasicRxUsages {
                 .subscribe();
     }
 
-    private static void rxAndLongRunningTaskVoid(boolean runTest) {
+    public static void rxAndLongRunningTaskVoid() {
         // Don't use Observable.create
         // https://artemzin.com/blog/rxjava-defer-execution-of-function-via-fromcallable/
-
-        if (!runTest) return;
-
         Observable.fromCallable(() -> {
             longRunningTaskVoid();
             return null;
@@ -69,12 +50,9 @@ public class BasicRxUsages {
                 .subscribe();
     }
 
-    private static void combiningFewTasksWhichDependsOnEachOtherInSerial(boolean runTest) {
+    public static void combiningFewTasksWhichDependsOnEachOtherInSerial() {
         // Don't use Observable.create
         // https://artemzin.com/blog/rxjava-defer-execution-of-function-via-fromcallable/
-
-        if (!runTest) return;
-
         Observable.fromCallable(() -> getNewPerson(1))
                 .subscribeOn(Schedulers.io())                   // Thread - IO   | Run tasks here
                 .doOnSubscribe(() -> Logger.d("Point #1"))      // Thread - Main | As whole rxchain started from Main
@@ -123,9 +101,7 @@ public class BasicRxUsages {
         // content from one type to another
     }
 
-    private static void combiningFewTasksWhichDependsOnEachOtherInParallel(boolean runTest) {
-        if (!runTest) return;
-
+    public static void combiningFewTasksWhichDependsOnEachOtherInParallel() {
         Observable.fromCallable(() -> getNewPerson(1))
                 .subscribeOn(Schedulers.io())                   // Thread - IO   | Run tasks here
                 .doOnSubscribe(() -> Logger.d("Point #1"))      // Thread - Main | As whole rxchain started from Main
@@ -164,9 +140,7 @@ public class BasicRxUsages {
                 .subscribe();
     }
 
-    private static void forwardingExceptionsToSubscriber(boolean runTest) {
-        if (!runTest) return;
-
+    public static void forwardingExceptionsToSubscriber() {
         Observable
                 // This operator accepts Callable.call function
                 // that rethrows checked exceptions that's why
@@ -246,9 +220,7 @@ public class BasicRxUsages {
         // https://github.com/ReactiveX/RxJava/wiki/Error-Handling-Operators
     }
 
-    private static void detailedErrorHandling(boolean runTest) {
-        if (!runTest) return;
-
+    public static void detailedErrorHandling() {
         Observable
                 // This operator accepts Callable.call function
                 // that rethrows checked exceptions that's why
@@ -361,7 +333,7 @@ public class BasicRxUsages {
         // https://github.com/ReactiveX/RxJava/wiki/Error-Handling-Operators
     }
 
-    static private String longRunningTask() {
+    private static String longRunningTask() {
         // According to rxAndLongRunningTaskWithResult
         // everything inside this function happening on
         // RxNewThreadScheduler-1 (or something like that).
@@ -378,7 +350,7 @@ public class BasicRxUsages {
         return "Result";
     }
 
-    static private void longRunningTaskVoid() {
+    private static void longRunningTaskVoid() {
         // According to rxAndLongRunningTaskVoid everything
         // inside this function happening on
         // RxComputationScheduler-1 (or something like that).
@@ -403,7 +375,7 @@ public class BasicRxUsages {
     }
 
     private static Person getNewPersonOrError(int num) throws IOException, InterruptedException {
-        longRunningTaskSimulationOrError("getNewPerson");
+        longRunningTaskSimulationOrError("getNewPersonOrError");
 
         PersonAddressStreet personAddressStreet = new PersonAddressStreet("Ccccc" + num);
         PersonAddress personAddress = new PersonAddress(personAddressStreet);
@@ -417,7 +389,7 @@ public class BasicRxUsages {
     }
 
     private static Person.Settings fetchPersonSettingsOrError(Person person) throws IOException, InterruptedException {
-        longRunningTaskSimulationOrError("fetchPersonSettings");
+        longRunningTaskSimulationOrError("fetchPersonSettingsOrError");
 
         return new Person.Settings(person);
     }
@@ -433,7 +405,7 @@ public class BasicRxUsages {
     }
 
     private static ArrayList<Person.Message> fetchPersonMessagesOrError(Person person) throws IOException, InterruptedException {
-        longRunningTaskSimulationOrError("fetchPersonMessages");
+        longRunningTaskSimulationOrError("fetchPersonMessagesOrError");
 
         ArrayList<Person.Message> messages = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
