@@ -1,9 +1,10 @@
-package com.daxh.explore.madtest01;
+package com.daxh.explore.madtest01.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import com.daxh.explore.madtest01.R;
 import com.daxh.explore.madtest01.tests.BasicRxUsages;
 import com.daxh.explore.madtest01.tests.LambdasUsages;
 import com.daxh.explore.madtest01.tests.StreamsUsages;

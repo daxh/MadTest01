@@ -1,9 +1,10 @@
-package com.daxh.explore.madtest01;
+package com.daxh.explore.madtest01.activities;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
+import com.daxh.explore.madtest01.R;
 import com.daxh.explore.madtest01.tests.OptionalUsages;
 
 import static com.daxh.explore.madtest01.utils.BindingUtils.bindButton;
