@@ -12,8 +12,8 @@ android {
         applicationId "com.daxh.explore.madtest01"
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 1
-        versionName "0.1"
+        versionCode 2
+        versionName "0.2"
     }
 
     // Java 8 lambdas support
@@ -47,4 +47,29 @@ dependencies {
     // features (like Optionals, Strem API) that by
     // default not available on Android
     compile 'com.annimon:stream:1.1.2'
+
+    // RxJava
+    // Reactive Extensions for Java library itself.
+    // Because RxAndroid releases are few and far between, it is recommended you also
+    // explicitly depend on RxJava's latest version for bug fixes and new features.
+    compile 'io.reactivex:rxjava:1.1.6'
+    compile 'io.reactivex:rxjava-async-util:0.21.0'
+
+    // RxAndroid
+    // Library that provides additional glue level
+    // between RxJava itself and Android environment
+    compile 'io.reactivex:rxandroid:1.2.1'
+
+    // RxBindings
+    // Specific library that provides easier integration
+    // between android UI and RxJava conceptions
+    compile 'com.jakewharton.rxbinding:rxbinding:0.4.0'
+    compile 'com.jakewharton.rxbinding:rxbinding-support-v4:0.4.0'
+    compile 'com.jakewharton.rxbinding:rxbinding-appcompat-v7:0.4.0'
+
+    // RxLifeCycle
+    // Specific library that provides easier integration
+    // beyween Activity/Fragment lifecycle and RxJava
+    compile 'com.trello:rxlifecycle:0.4.0'
+    compile 'com.trello:rxlifecycle-components:0.4.0'
 }

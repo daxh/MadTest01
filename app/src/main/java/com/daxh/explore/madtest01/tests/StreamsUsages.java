@@ -3,8 +3,11 @@ package com.daxh.explore.madtest01.tests;
 import android.text.TextUtils;
 
 import com.annimon.stream.Collectors;
+import com.annimon.stream.IntStream;
 import com.annimon.stream.Optional;
+import com.annimon.stream.PrimitiveIterator;
 import com.annimon.stream.Stream;
+import com.annimon.stream.function.Function;
 import com.daxh.explore.madtest01.tests.models.Person;
 import com.daxh.explore.madtest01.tests.models.PersonAddress;
 import com.daxh.explore.madtest01.tests.models.PersonAddressStreet;
@@ -21,6 +24,8 @@ public class StreamsUsages {
             findConfiguredPersonAdressesOfPersonsOlderThan4();
             makeEveryoneOlder();
             makeEveryoneOlderConvertToAges();
+            makeEveryoneOlderConvertToIntStreamAges();
+            findAverageAge();
         }
     }
 
@@ -83,6 +88,48 @@ public class StreamsUsages {
         Logger.d(arrayList);
     }
 
+    private static void makeEveryoneOlderConvertToIntStreamAges() {
+        // Note 'boxed' sometimes could
+        // be extremely useful to deal
+        // with IntStream
+
+        ArrayList arrayList = Stream.of(getPersons())
+                .mapToInt(person -> person.getAge() + 5)
+                .boxed()
+                .collect(Collectors.toCollection(ArrayList::new));
+        Logger.d(arrayList);
+    }
+
+    private static void findAverageAge() {
+        double averageAge = 0;
+
+        // Surprisingly LSA IntStream hasn't 'average'
+        // method unlike Java 8 Stream API, but it could
+        // be easily achieved with custom operator
+
+        averageAge = Stream.of(getPersons())
+                .mapToInt(Person::getAge)
+                .custom(stream -> {
+                    long count = 0, sum = 0;
+                    while (stream.iterator().hasNext()) {
+                        count++;
+                        sum += stream.iterator().nextInt();
+                    }
+                    return (count == 0) ? 0 : sum / (double) count;
+                });
+
+        // Or even in a such way:
+        averageAge = Stream.of(getPersons())
+                .mapToInt(Person::getAge)
+                .custom(new Average());
+
+        // More examples of custom operators
+        // could be found there:
+        // https://github.com/aNNiMON/Lightweight-Stream-API/blob/master/stream/src/test/java/com/annimon/stream/CustomOperators.java
+
+        Logger.d("Average Age = %f", averageAge);
+    }
+
     private static ArrayList<Person> getPersons() {
         ArrayList<Person> persons = new ArrayList<>();
 
@@ -100,6 +147,19 @@ public class StreamsUsages {
         persons.add(new Person("Aaaaa11", "Bbbbb11", 11, new PersonAddress(new PersonAddressStreet("Ccccccc11"))));
 
         return persons;
+    }
+
+    private static class Average implements Function<IntStream, Double> {
+        @Override
+        public Double apply(IntStream stream) {
+            long count = 0, sum = 0;
+            final PrimitiveIterator.OfInt it = stream.iterator();
+            while (it.hasNext()) {
+                count++;
+                sum += it.nextInt();
+            }
+            return (count == 0) ? 0 : sum / (double) count;
+        }
     }
 
 }
