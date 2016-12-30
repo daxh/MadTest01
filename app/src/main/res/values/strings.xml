@@ -5,8 +5,16 @@
     <string name="bt_streams">STREAMS</string>
     <string name="bt_basic_rx">BASIC RX</string>
     <string name="title_optional_usages">Optional Usages</string>
+    <string name="title_streams_usages">Streams Usages</string>
     <string name="bt_create_optionals">CREATE OPTIONALS</string>
     <string name="bt_use_default_value">USE DEFAULT VALUE</string>
     <string name="bt_non_null_chaining">NON NULL CHAINING</string>
     <string name="bt_perform_if_exists">PERFORM IF EXISTS</string>
+    <string name="bt_find_persons_with_conf_street_names">FIND PERSONS WITH CONFIGURED STREET NAMES</string>
+    <string name="bt_find_persons_with_streets_containing_3">FIND PERSONS WITH STREETS CONTAINING 3</string>
+    <string name="bt_find_configured_streets_of_persons_older_than_4">FIND CONFIGURED STREETS OF PERSONS OLDER THAN 4</string>
+    <string name="bt_make_everyone_older">MAKE EVERYONE OLDER</string>
+    <string name="bt_make_everyone_older_show_ages">MAKE EVERYONE OLDER AND SHOW AGES</string>
+    <string name="bt_make_everyone_older_show_int_stream_ages">MAKE EVERYONE OLDER AND SHOW AGES AS INT STREAM</string>
+    <string name="bt_average_age">CALCULATE AVERAGE AGE</string>
 </resources>
