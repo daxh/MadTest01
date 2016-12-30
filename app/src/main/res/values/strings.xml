@@ -33,6 +33,6 @@
         showing progress and so on. Also we need to take into consideration such aspects
         as Rx and memory/context leaking. Right now we not taking into consideration
         Rx and restoration of view states or background tasks after configuration changes</string>
-    <string name="hint_phone_number">Phone number</string>
+    <string name="hint_phone_number">Phone number: +X(XXX)XXX-XX-XX</string>
     <string name="bt_start">START</string>
 </resources>
