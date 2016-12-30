@@ -17,15 +17,6 @@ import com.orhanobut.logger.Logger;
 
 public class OptionalUsages {
 
-    public static void start(boolean b) {
-        if (b) {
-            createOptional();
-            useDefaultValue();
-            nonNullChaining();
-            performIfExist();
-        }
-    }
-
     public static void createOptional() {
         //Empty Optional object
         Optional<Person> optPerson = Optional.empty();
