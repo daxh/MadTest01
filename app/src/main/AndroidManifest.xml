@@ -24,6 +24,10 @@
             android:name=".activities.StreamsUsagesActivity"
             android:label="@string/title_streams_usages"/>
 
+        <activity
+            android:name=".activities.LambdasUsagesActivity"
+            android:label="@string/title_lambdas_usages"/>
+
     </application>
 
 </manifest>

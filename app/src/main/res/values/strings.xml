@@ -17,4 +17,8 @@
     <string name="bt_make_everyone_older_show_ages">MAKE EVERYONE OLDER AND SHOW AGES</string>
     <string name="bt_make_everyone_older_show_int_stream_ages">MAKE EVERYONE OLDER AND SHOW AGES AS INT STREAM</string>
     <string name="bt_average_age">CALCULATE AVERAGE AGE</string>
+    <string name="title_lambdas_usages">Lambdas Usages</string>
+    <string name="bt_lambdas_as_variables">LAMBDAS AS VARIABLES</string>
+    <string name="bt_lambdas_and_classes">LAMBDAS AND CLASSES</string>
+    <string name="bt_lambdas_as_args">LAMBDAS AS ARGS</string>
 </resources>
