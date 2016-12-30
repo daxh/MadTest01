@@ -4,4 +4,9 @@
     <string name="bt_lambdas">LAMBDAS</string>
     <string name="bt_streams">STREAMS</string>
     <string name="bt_basic_rx">BASIC RX</string>
+    <string name="title_optional_usages">Optional Usages</string>
+    <string name="bt_create_optionals">CREATE OPTIONALS</string>
+    <string name="bt_use_default_value">USE DEFAULT VALUE</string>
+    <string name="bt_non_null_chaining">NON NULL CHAINING</string>
+    <string name="bt_perform_if_exists">PERFORM IF EXISTS</string>
 </resources>
