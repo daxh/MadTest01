@@ -374,7 +374,7 @@ public class BasicRxUsages {
         return new Person("Aaaaa" + num, "Bbbbb" + num, num, personAddress);
     }
 
-    private static Person getNewPersonOrError(int num) throws IOException, InterruptedException {
+    public static Person getNewPersonOrError(int num) throws IOException, InterruptedException {
         longRunningTaskSimulationOrError("getNewPersonOrError");
 
         PersonAddressStreet personAddressStreet = new PersonAddressStreet("Ccccc" + num);
@@ -388,7 +388,7 @@ public class BasicRxUsages {
         return new Person.Settings(person);
     }
 
-    private static Person.Settings fetchPersonSettingsOrError(Person person) throws IOException, InterruptedException {
+    public static Person.Settings fetchPersonSettingsOrError(Person person) throws IOException, InterruptedException {
         longRunningTaskSimulationOrError("fetchPersonSettingsOrError");
 
         return new Person.Settings(person);
@@ -404,7 +404,7 @@ public class BasicRxUsages {
         return messages;
     }
 
-    private static ArrayList<Person.Message> fetchPersonMessagesOrError(Person person) throws IOException, InterruptedException {
+    public static ArrayList<Person.Message> fetchPersonMessagesOrError(Person person) throws IOException, InterruptedException {
         longRunningTaskSimulationOrError("fetchPersonMessagesOrError");
 
         ArrayList<Person.Message> messages = new ArrayList<>();

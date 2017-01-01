@@ -7,10 +7,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
 
 import com.annimon.stream.Optional;
+import com.annimon.stream.function.Function;
 import com.daxh.explore.madtest01.R;
+import com.daxh.explore.madtest01.tests.BasicRxUsages;
+import com.daxh.explore.madtest01.tests.models.Person;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.jakewharton.rxbinding.widget.TextViewAfterTextChangeEvent;
@@ -18,37 +22,132 @@ import com.jakewharton.rxbinding.widget.TextViewBeforeTextChangeEvent;
 import com.jakewharton.rxbinding.widget.TextViewTextChangeEvent;
 import com.orhanobut.logger.Logger;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.exceptions.Exceptions;
+import rx.schedulers.Schedulers;
 
 public class RxUiActivity extends AppCompatActivity{
+
+    public static final int TOTAL_MASKED_PHONE_LENGTH = 16;
+
+    Optional<Button> btStart = Optional.empty();
+    Optional<EditText> etPhoneNumber = Optional.empty();
+
+    Function<CharSequence, Boolean> checkSymbolRedundancy = cs -> cs.length() > TOTAL_MASKED_PHONE_LENGTH;
+    Function<CharSequence, Boolean> checkPhoneСompleteness = cs -> cs.length() == TOTAL_MASKED_PHONE_LENGTH;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rx_ui);
 
-        Optional.ofNullable(findViewById(R.id.btStart))
-                .ifPresent(v -> RxView.clicks(v)
+        btStart = Optional.ofNullable((Button)findViewById(R.id.btStart))
+                .executeIfPresent(view -> RxView.clicks(view)
                 .subscribe(aVoid -> runLrtWithRx()));
 
-        Optional.ofNullable((EditText) findViewById(R.id.etPhoneNumber))
-                .ifPresent(editText -> {
-                    setupPhoneNumberInputMask(editText);
+        etPhoneNumber = Optional.ofNullable((EditText) findViewById(R.id.etPhoneNumber))
+                .executeIfPresent(editText -> {
+                    RxTextView.textChangeEvents(editText).subscribe(event -> {
+                        btStart.executeIfPresent(bt -> bt.setEnabled(checkPhoneСompleteness.apply(event.text())));
+                    });
 
                     RxTextView.editorActionEvents(editText).subscribe(event -> {
                         if (event.actionId() == EditorInfo.IME_ACTION_DONE) {
                             runLrtWithRx();
                         }
                     });
+
+                    setupPhoneNumberInputMask(editText);
                 });
     }
 
     private void runLrtWithRx() {
-        Logger.d("runLrtWithRx");
+        Observable
+                .fromCallable(() -> BasicRxUsages.getNewPersonOrError(1))
+                .retry((integer, throwable) -> {
+                    int max = 3;
+                    if (integer < max) {
+                        Logger.d("%d / %d getNewPersonOrError failed. Retrying ...", integer+1, max);
+                        return true;
+                    } else {
+                        Logger.d("%d / %d getNewPersonOrError failed. Falling back.", integer, max);
+                        return false;
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .doOnSubscribe(() -> Logger.d("Point #1"))
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(person -> {
+                    double random = Math.random();
+
+                    if (random < .25){
+                        try {
+                            throw new IOException("Point #2 " + person);
+                        } catch (IOException e) {
+                            throw Exceptions.propagate(e);
+                        }
+                    }
+
+                    if (random < .5){
+                        Logger.d("EXCEPTION2: " + "Point #2 " + person);
+                        throw new RuntimeException("Point #2 " + person);
+                    }
+
+                    Logger.d("Point #2 " + person);
+                })
+                .retryWhen(observable -> observable.flatMap(throwable -> {
+                    if ((throwable instanceof RuntimeException)) {
+                        Logger.d("RETRY: Point #2");
+                        return Observable.just(null);
+                    }
+
+                    Logger.d("FALLBACK: Point #2");
+                    return Observable.error(throwable);
+                }))
+                .observeOn(Schedulers.io())
+                .flatMap(user -> Observable.zip(
+                        Observable
+                                .fromCallable(() -> BasicRxUsages.fetchPersonSettingsOrError(user))
+                                .subscribeOn(Schedulers.io())
+                                .onErrorReturn(throwable -> {
+                                    Logger.d("DEFAULT: fetchPersonSettingsOrError");
+                                    return new Person.Settings(user);
+                                }),
+                        Observable
+                                .fromCallable(() -> BasicRxUsages.fetchPersonMessagesOrError(user))
+                                .subscribeOn(Schedulers.io())
+                                .onErrorReturn(throwable -> {
+                                    Logger.d("DEFAULT: fetchPersonSettingsOrError");
+                                    return new ArrayList<>();
+                                }),
+                        Pair::create))
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(settingsMsgsListPair -> Logger.d("Point #4 " + settingsMsgsListPair))
+                .flatMap(settingsMsgsListPair -> {
+                    Logger.d("Point #5 " + settingsMsgsListPair);
+                    return Observable.from(settingsMsgsListPair.second);
+                })
+                .subscribe(
+                        // onNext
+                        message -> Logger.d("Point #6"),
+                        // onError
+                        throwable -> {
+                            // All exceptions could be processed
+                            // in one place - here, if this is a
+                            // desirable behavior
+                            Logger.d("onError " + throwable.getMessage());
+                        },
+                        // onCompleted
+                        () -> Logger.d("DONE")
+                );
     }
 
     private void setupPhoneNumberInputMask(EditText editText) {
-        // 'Share' = useful operator that allows to
+        // 'Share' - useful operator that allows to
         // use few subsribers with "one" (technically
         // multiple) observable.
         Observable<TextViewBeforeTextChangeEvent> before = RxTextView.beforeTextChangeEvents(editText).share();
@@ -94,8 +193,8 @@ public class RxUiActivity extends AppCompatActivity{
                         return Observable.just(new Pair<>(-1, ""));
                     }
 
-                    if (curText.length() >= 17) {
-                        // All numbers already entered
+                    if (checkSymbolRedundancy.apply(curText)) {
+                        // All numbers already entered, delete extra
                         return Observable.just(new Pair<>(-2, ""));
                     }
 
