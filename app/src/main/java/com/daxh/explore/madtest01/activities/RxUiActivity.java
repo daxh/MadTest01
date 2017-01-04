@@ -6,15 +6,19 @@ import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.annimon.stream.Optional;
 import com.annimon.stream.function.Function;
 import com.daxh.explore.madtest01.R;
 import com.daxh.explore.madtest01.tests.BasicRxUsages;
 import com.daxh.explore.madtest01.tests.models.Person;
+import com.daxh.explore.madtest01.utils.LoggerUtils;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.jakewharton.rxbinding.widget.TextViewAfterTextChangeEvent;
@@ -24,18 +28,32 @@ import com.orhanobut.logger.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.exceptions.Exceptions;
 import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 
 public class RxUiActivity extends AppCompatActivity{
 
     public static final int TOTAL_MASKED_PHONE_LENGTH = 16;
+    public static final int GET_NEW_PRSN_MAX_RETRIES = 10;
 
     Optional<Button> btStart = Optional.empty();
     Optional<EditText> etPhoneNumber = Optional.empty();
+    Optional<TextView> tvLog = Optional.empty();
+    Optional<ProgressBar> pbLoading = Optional.empty();
+
+    // We using subjects to sinplify calls to UI
+    // from other threads, when this is need to be
+    // mostly from doOnSubscribe, as we can't easily
+    // switch thread for this operator. More could be
+    // found here
+    // https://groups.google.com/forum/#!topic/rxjava/TCGBiT0gbyI
+    PublishSubject<Boolean> sbjLoading = PublishSubject.create();
+    PublishSubject<String> sbjLog = PublishSubject.create();
 
     Function<CharSequence, Boolean> checkSymbolRedundancy = cs -> cs.length() > TOTAL_MASKED_PHONE_LENGTH;
     Function<CharSequence, Boolean> checkPhoneСompleteness = cs -> cs.length() == TOTAL_MASKED_PHONE_LENGTH;
@@ -44,6 +62,16 @@ public class RxUiActivity extends AppCompatActivity{
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rx_ui);
+        LoggerUtils.explicit();
+
+        sbjLoading
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::showProgress);
+        sbjLog
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::appendToLog);
 
         btStart = Optional.ofNullable((Button)findViewById(R.id.btStart))
                 .executeIfPresent(view -> RxView.clicks(view)
@@ -63,87 +91,209 @@ public class RxUiActivity extends AppCompatActivity{
 
                     setupPhoneNumberInputMask(editText);
                 });
+
+        tvLog = Optional.ofNullable((TextView) findViewById(R.id.tvLog));
+        pbLoading = Optional.ofNullable((ProgressBar) findViewById(R.id.pbLoading));
     }
 
     private void runLrtWithRx() {
         Observable
-                .fromCallable(() -> BasicRxUsages.getNewPersonOrError(1))
-                .retry((integer, throwable) -> {
-                    int max = 3;
-                    if (integer < max) {
-                        Logger.d("%d / %d getNewPersonOrError failed. Retrying ...", integer+1, max);
-                        return true;
-                    } else {
-                        Logger.d("%d / %d getNewPersonOrError failed. Falling back.", integer, max);
-                        return false;
-                    }
+                // This operator accepts Callable.call function
+                // that rethrows checked exceptions that's why
+                // we don't need any additional try/catch blocks
+                // or Exceptions.propagate
+                .fromCallable(() -> {
+                    // Thanks to '.subscribeOn(Schedulers.io())' line
+                    // here we always have some of Thread: RxIoScheduler
+
+                    Logger.d("Starting GetNewPerson LRT");
+                    return BasicRxUsages.getNewPersonOrError(1);
                 })
                 .subscribeOn(Schedulers.io())
-                .doOnSubscribe(() -> Logger.d("Point #1"))
+                // This line switches everything starting from 'retry'
+                // ('retry' included) to Thread: Main, but keeps lrt
+                // itself on Thread: RxIoScheduler
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(person -> {
-                    double random = Math.random();
-
-                    if (random < .25){
-                        try {
-                            throw new IOException("Point #2 " + person);
-                        } catch (IOException e) {
-                            throw Exceptions.propagate(e);
-                        }
-                    }
-
-                    if (random < .5){
-                        Logger.d("EXCEPTION2: " + "Point #2 " + person);
-                        throw new RuntimeException("Point #2 " + person);
-                    }
-
-                    Logger.d("Point #2 " + person);
+                .retry((attempts, throwable) -> {
+                    // By default retry happens on the same thread as original
+                    // lrt (but queued thread, on Scheduler.trampoline). Also
+                    // looks like we could switch to main, and we switch it, by
+                    // placing '.observeOn(AndroidSchedulers.mainThread())' above.
+                    Logger.d(String.format(Locale.US, "RETRY1: %d, %s",attempts, throwable.getLocalizedMessage()));
+                    return attempts <= GET_NEW_PRSN_MAX_RETRIES;
                 })
-                .retryWhen(observable -> observable.flatMap(throwable -> {
-                    if ((throwable instanceof RuntimeException)) {
-                        Logger.d("RETRY: Point #2");
-                        return Observable.just(null);
-                    }
+                .doOnSubscribe(() -> {
+                    // This happening on Thread: Main as everything is
+                    // started from Thread: Main
+                    Logger.d("Entering chain");
+                    showProgress(true);
+                })
+                // This whole trick (with doOnNext and one
+                // more Observable.call inside it) is made to
+                // separate a part of actions and related error
+                // handling with retry from the main rx chain.
+                // This let us to handle errors and restart(
+                // resubscribe) only in this sub-chain without
+                // even touching the main chain.
+                .doOnNext(person -> Observable.fromCallable(() -> {
+                            // Still Thread: Main
+                            // Demonstration how different exceptions could
+                            // be handled in Observable.fromCallable calls
+                            // This operator accepts Callable.call function
+                            // that rethrows checked exceptions (unchecked
+                            // rethrown by rx out of the box) that's why we
+                            // don't need any additional try/catch blocks or
+                            // Exceptions.propagate
+                            Logger.d("Person obtained");
 
-                    Logger.d("FALLBACK: Point #2");
-                    return Observable.error(throwable);
-                }))
+                            double random = Math.random();
+
+                            // Unchecked exception
+                            if (random < .25){
+                                Logger.d("EXCEPTION 2: Person obtained");
+                                throw new RuntimeException("EXCEPTION 2: Person obtained");
+                            }
+
+                            // Checked exception
+                            if (random < .5){
+                                Logger.d("EXCEPTION 1.1: Person obtained");
+                                throw new IOException("EXCEPTION 1: Person obtained");
+                            }
+
+                            Logger.d("Info: " + person);
+                            return person;
+                        })
+                        // Demonstration how different exceptions could
+                        // be handled in doOnNext and analogous places
+                        .doOnNext(person1 -> {
+                            Logger.d("After person obtained");
+                            if (Math.random() < .9){
+                                try {
+                                    Logger.d("EXCEPTION 1.2: After person obtained");
+                                    throw new IOException("EXCEPTION 1: After person obtained");
+                                } catch (IOException e) {
+                                    // Here we using MyException to distinguish this
+                                    // particular situation from analogous runtime
+                                    // exceptions and Exceptions.propagate to forward
+                                    // exception to error handling methods (like 'retry',
+                                    // 'onErrorResumeNext', and so on) below.
+                                    throw Exceptions.propagate(new MyException(e));
+                                }
+                            }
+                        })
+                        .retry((attempts, throwable) -> {
+                            Logger.d(String.format(Locale.US, "RETRY2: %d, %s",attempts, throwable.getLocalizedMessage()));
+
+                            if (attempts<= GET_NEW_PRSN_MAX_RETRIES) {
+                                if (throwable instanceof IOException) {
+                                    Logger.d(String.format(Locale.US, "RETRY2: retry"));
+                                    return true; // try again
+                                }
+
+                                if (throwable instanceof MyException) {
+                                    Logger.d(String.format(Locale.US, "RETRY2: skip2"));
+                                    return false; // go downstream on chain
+                                }
+
+                                if (throwable instanceof RuntimeException) {
+                                    Logger.d(String.format(Locale.US, "RETRY2: skip1"));
+                                    return false; // go downstream on chain
+                                }
+                            }
+
+                            Logger.d(String.format(Locale.US, "RETRY2: fallback"));
+                            return false; // go downstream on chain
+                        })
+                        .onErrorResumeNext(throwable -> {
+                            if (throwable instanceof MyException) {
+                                Logger.d(String.format(Locale.US, "DEFAULT1: skipping1 " + throwable.getLocalizedMessage()));
+                                return Observable.just(person); // error, but we could provide default value and complete
+                            }
+
+                            if (throwable instanceof RuntimeException) {
+                                Logger.d(String.format(Locale.US, "DEFAULT1: skipping2 " + throwable.getLocalizedMessage()));
+                                return Observable.just(person); // error, but we could provide default value and complete
+                            }
+
+                            Logger.d(String.format(Locale.US, "DEFAULT1: falling back " + throwable.getLocalizedMessage()));
+                            return Observable.error(throwable); // error, no way to succeed
+                        })
+                        .subscribe(
+                                result -> Logger.d("onNext1: " + result),
+                                throwable -> Logger.d("onError1: " + throwable.getLocalizedMessage()),
+                                () -> Logger.d("onCompleted1: Person obtained DONE"))
+                )
+                // Switching to Thread: Io
                 .observeOn(Schedulers.io())
-                .flatMap(user -> Observable.zip(
+                .flatMap(person -> Observable.zip(
+                        // Right now we are on the Thread: Io, below calls
+                        // to 'doOnSubscribe' for new observable and there
+                        // is will be made on Thread: Io too respectevely.
+                        // There is no clean way to do something on UI
+                        // thread just using operators, so in this specific
+                        // case it is possible to use subjects
                         Observable
-                                .fromCallable(() -> BasicRxUsages.fetchPersonSettingsOrError(user))
+                                .fromCallable(() -> BasicRxUsages.fetchPersonSettingsOrError(person))
+                                .doOnSubscribe(() -> Logger.d("fetchPersonSettingsOrError"))
                                 .subscribeOn(Schedulers.io())
+                                .doOnNext(settings -> Logger.d("Settings: " + settings))
                                 .onErrorReturn(throwable -> {
                                     Logger.d("DEFAULT: fetchPersonSettingsOrError");
-                                    return new Person.Settings(user);
+                                    return new Person.Settings(person); // error, but we could provide default value and complete
                                 }),
                         Observable
-                                .fromCallable(() -> BasicRxUsages.fetchPersonMessagesOrError(user))
+                                .fromCallable(() -> BasicRxUsages.fetchPersonMessagesOrError(person))
+                                .doOnSubscribe(() -> Logger.d("fetchPersonMessagesOrError"))
                                 .subscribeOn(Schedulers.io())
+                                .doOnNext(messages -> Logger.d("Messages: " + messages))
                                 .onErrorReturn(throwable -> {
-                                    Logger.d("DEFAULT: fetchPersonSettingsOrError");
-                                    return new ArrayList<>();
+                                    Logger.d("DEFAULT: fetchPersonMessagesOrError");
+                                    return new ArrayList<>(); // error, but we could provide default value and complete
                                 }),
                         Pair::create))
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(settingsMsgsListPair -> Logger.d("Point #4 " + settingsMsgsListPair))
+                .doOnNext(settingsMsgsListPair -> Logger.d("User info obtained..."))
                 .flatMap(settingsMsgsListPair -> {
-                    Logger.d("Point #5 " + settingsMsgsListPair);
+                    Logger.d("Checking messages...");
                     return Observable.from(settingsMsgsListPair.second);
                 })
                 .subscribe(
                         // onNext
-                        message -> Logger.d("Point #6"),
+                        message -> Logger.d("onNext2: " + message.toString()),
                         // onError
                         throwable -> {
                             // All exceptions could be processed
                             // in one place - here, if this is a
                             // desirable behavior
-                            Logger.d("onError " + throwable.getMessage());
+                            Logger.d("onError2 " + throwable.getMessage());
+                            showProgress(false);
                         },
                         // onCompleted
-                        () -> Logger.d("DONE")
+                        () -> {
+                            Logger.d("onCompleted2: DONE");
+                            showProgress(false);
+                        }
                 );
+    }
+
+    private void appendToLog(String s) {
+        tvLog.ifPresent(tv -> tv.setText(tv.getText().toString() + "\n" + s));
+        Logger.e(s);
+    }
+
+    private void showProgress(boolean show) {
+        if (show) {
+            tvLog.ifPresent(tv -> tv.setText(""));
+            pbLoading.ifPresent(progressBar -> progressBar.setVisibility(View.VISIBLE));
+
+            btStart.ifPresent(bt -> bt.setEnabled(false));
+            etPhoneNumber.ifPresent(et -> et.setEnabled(false));
+        } else {
+            pbLoading.ifPresent(progressBar -> progressBar.setVisibility(View.GONE));
+
+            btStart.ifPresent(bt -> bt.setEnabled(true));
+            etPhoneNumber.ifPresent(et -> et.setEnabled(true));
+        }
     }
 
     private void setupPhoneNumberInputMask(EditText editText) {
@@ -245,5 +395,11 @@ public class RxUiActivity extends AppCompatActivity{
                         text.delete(text.length()-1,text.length());
                     }
                 }, Throwable::printStackTrace);
+    }
+
+    class MyException extends RuntimeException {
+        public MyException(Throwable throwable) {
+            super(throwable);
+        }
     }
 }
