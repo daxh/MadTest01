@@ -106,8 +106,20 @@ public class RxUiActivity extends AppCompatActivity{
                     // Thanks to '.subscribeOn(Schedulers.io())' line
                     // here we always have some of Thread: RxIoScheduler
 
-                    Logger.d("Starting GetNewPerson LRT");
-                    return BasicRxUsages.getNewPersonOrError(1);
+                    Person person = null;
+
+                    // Technically we don't need this try/catch/thrown
+                    // statement, but I will leave it here to make logging
+                    // more detailed
+                    try {
+                        Logger.d("STARTED: getNewPersonOrError");
+                        person = BasicRxUsages.getNewPersonOrError(1);
+                        Logger.d("COMPLETED: getNewPersonOrError");
+                    } catch (Exception e) {
+                        Logger.d("EXCEPTION1: getNewPersonOrError");
+                        throw e;
+                    }
+                    return person;
                 })
                 .subscribeOn(Schedulers.io())
                 // This line switches everything starting from 'retry'
@@ -144,33 +156,33 @@ public class RxUiActivity extends AppCompatActivity{
                             // rethrown by rx out of the box) that's why we
                             // don't need any additional try/catch blocks or
                             // Exceptions.propagate
-                            Logger.d("Person obtained");
+                            Logger.d("STARTED: Person obtained");
 
                             double random = Math.random();
 
                             // Unchecked exception
                             if (random < .25){
-                                Logger.d("EXCEPTION 2: Person obtained");
+                                Logger.d("EXCEPTION2: Person obtained");
                                 throw new RuntimeException("EXCEPTION 2: Person obtained");
                             }
 
                             // Checked exception
                             if (random < .5){
-                                Logger.d("EXCEPTION 1.1: Person obtained");
+                                Logger.d("EXCEPTION3: Person obtained");
                                 throw new IOException("EXCEPTION 1: Person obtained");
                             }
 
-                            Logger.d("Info: " + person);
+                            Logger.d("COMPLETED: Person obtained\nInfo: " + person);
                             return person;
                         })
                         // Demonstration how different exceptions could
                         // be handled in doOnNext and analogous places
                         .doOnNext(person1 -> {
-                            Logger.d("After person obtained");
+                            Logger.d("STARTED: After person obtained");
                             if (Math.random() < .9){
                                 try {
-                                    Logger.d("EXCEPTION 1.2: After person obtained");
-                                    throw new IOException("EXCEPTION 1: After person obtained");
+                                    Logger.d("EXCEPTION4: After person obtained");
+                                    throw new IOException("EXCEPTION4: After person obtained");
                                 } catch (IOException e) {
                                     // Here we using MyException to distinguish this
                                     // particular situation from analogous runtime
@@ -180,55 +192,56 @@ public class RxUiActivity extends AppCompatActivity{
                                     throw Exceptions.propagate(new MyException(e));
                                 }
                             }
+                            Logger.d("COMPLETED: After person obtained");
                         })
                         .retry((attempts, throwable) -> {
                             Logger.d(String.format(Locale.US, "RETRY2: %d, %s",attempts, throwable.getLocalizedMessage()));
 
                             if (attempts<= GET_NEW_PRSN_MAX_RETRIES) {
                                 if (throwable instanceof IOException) {
-                                    Logger.d(String.format(Locale.US, "RETRY2: retry"));
+                                    Logger.d("RETRY2: retry " + throwable.getLocalizedMessage());
                                     return true; // try again
                                 }
 
                                 if (throwable instanceof MyException) {
-                                    Logger.d(String.format(Locale.US, "RETRY2: skip2"));
+                                    Logger.d("RETRY2: skip " + throwable.getLocalizedMessage());
                                     return false; // go downstream on chain
                                 }
 
                                 if (throwable instanceof RuntimeException) {
-                                    Logger.d(String.format(Locale.US, "RETRY2: skip1"));
+                                    Logger.d("RETRY2: skip " + throwable.getLocalizedMessage());
                                     return false; // go downstream on chain
                                 }
                             }
 
-                            Logger.d(String.format(Locale.US, "RETRY2: fallback"));
+                            Logger.d("RETRY2: fallback" + throwable.getLocalizedMessage());
                             return false; // go downstream on chain
                         })
                         .onErrorResumeNext(throwable -> {
                             if (throwable instanceof MyException) {
-                                Logger.d(String.format(Locale.US, "DEFAULT1: skipping1 " + throwable.getLocalizedMessage()));
+                                Logger.d("DEFAULT1: skipping " + throwable.getLocalizedMessage());
                                 return Observable.just(person); // error, but we could provide default value and complete
                             }
 
                             if (throwable instanceof RuntimeException) {
-                                Logger.d(String.format(Locale.US, "DEFAULT1: skipping2 " + throwable.getLocalizedMessage()));
+                                Logger.d("DEFAULT1: skipping " + throwable.getLocalizedMessage());
                                 return Observable.just(person); // error, but we could provide default value and complete
                             }
 
-                            Logger.d(String.format(Locale.US, "DEFAULT1: falling back " + throwable.getLocalizedMessage()));
+                            Logger.d("DEFAULT1: falling back " + throwable.getLocalizedMessage());
                             return Observable.error(throwable); // error, no way to succeed
                         })
                         .subscribe(
                                 result -> Logger.d("onNext1: " + result),
                                 throwable -> Logger.d("onError1: " + throwable.getLocalizedMessage()),
-                                () -> Logger.d("onCompleted1: Person obtained DONE"))
+                                () -> Logger.d("onCompleted1"))
                 )
                 // Switching to Thread: Io
                 .observeOn(Schedulers.io())
                 .flatMap(person -> Observable.zip(
                         // Right now we are on the Thread: Io, below calls
-                        // to 'doOnSubscribe' for new observable and there
-                        // is will be made on Thread: Io too respectevely.
+                        // to 'doOnSubscribe' for new observable and other
+                        // will be made on Thread: Io too respectively.
                         // There is no clean way to do something on UI
                         // thread just using operators, so in this specific
                         // case it is possible to use subjects
@@ -270,7 +283,7 @@ public class RxUiActivity extends AppCompatActivity{
                         },
                         // onCompleted
                         () -> {
-                            Logger.d("onCompleted2: DONE");
+                            Logger.d("onCompleted2");
                             showProgress(false);
                         }
                 );
