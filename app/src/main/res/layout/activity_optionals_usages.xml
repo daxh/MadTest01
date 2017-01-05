@@ -13,33 +13,27 @@
     tools:context="com.daxh.explore.madtest01.activities.MainActivity">
 
     <Button
-        android:id="@+id/btOptionals"
+        android:id="@+id/btCreateOptionals"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/bt_optionals"/>
+        android:text="@string/bt_create_optionals"/>
 
     <Button
-        android:id="@+id/btLambdas"
+        android:id="@+id/btUseDefaultValue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/bt_lambdas"/>
+        android:text="@string/bt_use_default_value"/>
 
     <Button
-        android:id="@+id/btStreams"
+        android:id="@+id/btNonNullChaining"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/bt_streams"/>
+        android:text="@string/bt_non_null_chaining"/>
 
     <Button
-        android:id="@+id/btBasicRx"
+        android:id="@+id/btPerformIfExists"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/bt_basic_rx"/>
-
-    <Button
-        android:id="@+id/btRxAndUI"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/bt_rx_and_ui"/>
+        android:text="@string/bt_perform_if_exists"/>
 
 </LinearLayout>

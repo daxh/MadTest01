@@ -7,6 +7,7 @@ import com.daxh.explore.madtest01.tests.models.OptPersonAddressStreet;
 import com.daxh.explore.madtest01.tests.models.Person;
 import com.daxh.explore.madtest01.tests.models.PersonAddress;
 import com.daxh.explore.madtest01.tests.models.PersonAddressStreet;
+import com.orhanobut.logger.Logger;
 
 // Right now I think that general strategy to
 // exclude NPE from project could be to use
@@ -16,16 +17,7 @@ import com.daxh.explore.madtest01.tests.models.PersonAddressStreet;
 
 public class OptionalUsages {
 
-    public static void start(boolean b) {
-        if (b) {
-            createOptional();
-            useDefaultValue();
-            nonNullChaining();
-            performIfExist();
-        }
-    }
-
-    private static void createOptional() {
+    public static void createOptional() {
         //Empty Optional object
         Optional<Person> optPerson = Optional.empty();
 
@@ -38,7 +30,7 @@ public class OptionalUsages {
         Optional<Person> optnPerson = Optional.ofNullable(person2);
     }
 
-    private static void useDefaultValue() {
+    public static void useDefaultValue() {
         Optional<Person> personOpt = Optional.ofNullable(getPerson());
 
         // Provide default values if optional empty
@@ -52,7 +44,7 @@ public class OptionalUsages {
         }
     }
 
-    private static void nonNullChaining() {
+    public static void nonNullChaining() {
         // Normally we doing it like this
         String streetName;
         Person person = getPerson();
@@ -88,13 +80,13 @@ public class OptionalUsages {
         // returns type wrapped into Optional
     }
 
-    private static void performIfExist() {
+    public static void performIfExist() {
         // Normally we doing it like this
         Person person = getPerson();
         if(person != null) {
-            System.out.println(person);
+            Logger.d(person);
         } else {
-            System.out.println("Person not found!");
+            Logger.d("Person not found!");
         }
 
         // But now we could do it like this
@@ -102,15 +94,15 @@ public class OptionalUsages {
 
         // Not much different, but still useful
         if (personOpt.isPresent()) {
-            System.out.println(personOpt.get());
+            Logger.d(personOpt.get());
         } else {
-            System.out.println("Person not found!");
+            Logger.d("Person not found!");
         }
 
         // Now really different
         Optional.ofNullable(getPerson())
-                .executeIfPresent(System.out::println)
-                .executeIfAbsent(() -> System.out.println("Person not found!"));
+                .executeIfPresent(Logger::d)
+                .executeIfAbsent(() -> Logger.d("Person not found!"));
     }
 
     private static Person getPerson() {

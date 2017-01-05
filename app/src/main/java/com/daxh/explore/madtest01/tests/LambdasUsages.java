@@ -12,15 +12,7 @@ import java.util.List;
 
 public class LambdasUsages {
 
-    public static void start(boolean b) {
-        if (b) {
-            lambdasAsVariables();
-            lambdasAndClasses();
-            lambdasAsArgs();
-        }
-    }
-
-    private static void lambdasAsVariables() {
+    public static void lambdasAsVariables() {
         // As short one line definition
         // with 'auto' return statement
         // Custom interface used to store
@@ -53,7 +45,7 @@ public class LambdasUsages {
         Arrays.sort( strs, comparator);
     }
 
-    private static void lambdasAndClasses() {
+    public static void lambdasAndClasses() {
         OptPerson optPerson1 = new OptPerson(null);
         optPerson1.doSomeWork();
 
@@ -65,7 +57,7 @@ public class LambdasUsages {
         optPerson3.doSomeWork(() -> Logger.d("Some work done"));
     }
 
-    private static void lambdasAsArgs() {
+    public static void lambdasAsArgs() {
         List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5, 6);
 
         // Summing up all elements
@@ -90,7 +82,7 @@ public class LambdasUsages {
         return total;
     }
 
-    public static int sumAllEven(List<Integer> numbers) {
+    private static int sumAllEven(List<Integer> numbers) {
         int total = 0;
         for (int number : numbers) {
             if (number % 2 == 0) {
@@ -100,7 +92,7 @@ public class LambdasUsages {
         return total;
     }
 
-    public static int sumAll(List<Integer> numbers, Predicate<Integer> p) {
+    private static int sumAll(List<Integer> numbers, Predicate<Integer> p) {
         int total = 0;
         for (int number : numbers) {
             if (p.test(number)) {

@@ -13,33 +13,44 @@
     tools:context="com.daxh.explore.madtest01.activities.MainActivity">
 
     <Button
-        android:id="@+id/btOptionals"
+        android:id="@+id/btFind1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/bt_optionals"/>
+        android:text="@string/bt_find_persons_with_conf_street_names"/>
 
     <Button
-        android:id="@+id/btLambdas"
+        android:id="@+id/btFind2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/bt_lambdas"/>
+        android:text="@string/bt_find_persons_with_streets_containing_3"/>
 
     <Button
-        android:id="@+id/btStreams"
+        android:id="@+id/btFind3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/bt_streams"/>
+        android:text="@string/bt_find_configured_streets_of_persons_older_than_4"/>
 
     <Button
-        android:id="@+id/btBasicRx"
+        android:id="@+id/btMakeEveryoneOlder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/bt_basic_rx"/>
+        android:text="@string/bt_make_everyone_older"/>
 
     <Button
-        android:id="@+id/btRxAndUI"
+        android:id="@+id/btMakeEveryoneOlderShowAges"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/bt_rx_and_ui"/>
+        android:text="@string/bt_make_everyone_older_show_ages"/>
 
+    <Button
+        android:id="@+id/btMakeEveryoneOlderShowIntStreamAges"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/bt_make_everyone_older_show_int_stream_ages"/>
+
+    <Button
+        android:id="@+id/btAverageAge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/bt_average_age"/>
 </LinearLayout>

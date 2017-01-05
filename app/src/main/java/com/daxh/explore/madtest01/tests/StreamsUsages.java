@@ -17,19 +17,7 @@ import java.util.ArrayList;
 
 public class StreamsUsages {
 
-    public static void start(boolean b) {
-        if (b) {
-            findPersonsWithConfiguredStreetNames();
-            findPersonsWithStreetNamesContaining3();
-            findConfiguredPersonAdressesOfPersonsOlderThan4();
-            makeEveryoneOlder();
-            makeEveryoneOlderConvertToAges();
-            makeEveryoneOlderConvertToIntStreamAges();
-            findAverageAge();
-        }
-    }
-
-    private static void findPersonsWithConfiguredStreetNames() {
+    public static void findPersonsWithConfiguredStreetNames() {
         ArrayList arrayList = Stream.of(getPersons())
                 .filter((value) ->
                         Optional.of(value)
@@ -42,7 +30,7 @@ public class StreamsUsages {
         Logger.d(arrayList);
     }
 
-    private static void findPersonsWithStreetNamesContaining3() {
+    public static void findPersonsWithStreetNamesContaining3() {
         ArrayList arrayList = Stream.of(getPersons())
                 .filter((value) ->
                         Optional.of(value)
@@ -55,7 +43,7 @@ public class StreamsUsages {
         Logger.d(arrayList);
     }
 
-    private static void findConfiguredPersonAdressesOfPersonsOlderThan4() {
+    public static void findConfiguredStreetsOfPersonsOlderThan4() {
         ArrayList arrayList = Stream.of(getPersons())
                 .filter((value) -> {
                     Optional<Person> person = Optional.of(value);
@@ -74,21 +62,21 @@ public class StreamsUsages {
         Logger.d(arrayList);
     }
 
-    private static void makeEveryoneOlder() {
+    public static void makeEveryoneOlder() {
         ArrayList arrayList = Stream.of(getPersons())
                 .peek(person -> person.setAge(person.getAge() + 5))
                 .collect(Collectors.toCollection(ArrayList::new));
         Logger.d(arrayList);
     }
 
-    private static void makeEveryoneOlderConvertToAges() {
+    public static void makeEveryoneOlderConvertToAges() {
         ArrayList arrayList = Stream.of(getPersons())
                 .map(person -> person.getAge() + 5)
                 .collect(Collectors.toCollection(ArrayList::new));
         Logger.d(arrayList);
     }
 
-    private static void makeEveryoneOlderConvertToIntStreamAges() {
+    public static void makeEveryoneOlderConvertToIntStreamAges() {
         // Note 'boxed' sometimes could
         // be extremely useful to deal
         // with IntStream
@@ -100,7 +88,7 @@ public class StreamsUsages {
         Logger.d(arrayList);
     }
 
-    private static void findAverageAge() {
+    public static void findAverageAge() {
         double averageAge = 0;
 
         // Surprisingly LSA IntStream hasn't 'average'
