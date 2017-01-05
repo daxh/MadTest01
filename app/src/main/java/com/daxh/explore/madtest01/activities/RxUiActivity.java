@@ -11,6 +11,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.annimon.stream.Optional;
@@ -44,6 +45,7 @@ public class RxUiActivity extends AppCompatActivity{
     Optional<Button> btStart = Optional.empty();
     Optional<EditText> etPhoneNumber = Optional.empty();
     Optional<TextView> tvLog = Optional.empty();
+    Optional<ScrollView> svLog = Optional.empty();
     Optional<ProgressBar> pbLoading = Optional.empty();
 
     // We using subjects to simplify calls to UI
@@ -87,7 +89,9 @@ public class RxUiActivity extends AppCompatActivity{
                     setupPhoneNumberInputMask(editText);
                 });
 
+        svLog = Optional.ofNullable((ScrollView) findViewById(R.id.svLog));
         tvLog = Optional.ofNullable((TextView) findViewById(R.id.tvLog));
+            tvLog.ifPresent(tv -> RxView.globalLayouts(tv).subscribe(aVoid -> svLog.get().fullScroll(View.FOCUS_DOWN)));
         pbLoading = Optional.ofNullable((ProgressBar) findViewById(R.id.pbLoading));
     }
 
