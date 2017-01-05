@@ -36,4 +36,10 @@
         android:layout_height="wrap_content"
         android:text="@string/bt_basic_rx"/>
 
+    <Button
+        android:id="@+id/btRxAndUI"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/bt_rx_and_ui"/>
+
 </LinearLayout>

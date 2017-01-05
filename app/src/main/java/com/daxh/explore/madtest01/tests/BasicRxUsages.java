@@ -145,7 +145,7 @@ public class BasicRxUsages {
                 // This operator accepts Callable.call function
                 // that rethrows checked exceptions that's why
                 // we don't need any additional try/catch blocks
-                // or error handling operators
+                // or Exceptions.propagate
                 .fromCallable(() -> getNewPersonOrError(1))
                 .subscribeOn(Schedulers.io())
                 .doOnSubscribe(() -> Logger.d("Point #1"))
@@ -225,7 +225,7 @@ public class BasicRxUsages {
                 // This operator accepts Callable.call function
                 // that rethrows checked exceptions that's why
                 // we don't need any additional try/catch blocks
-                // or error handling operators
+                // or Exceptions.propagate
                 .fromCallable(() -> getNewPersonOrError(1))
                 // Retry operation above for 3 times before
                 // fallback into subscribers's onError
@@ -260,6 +260,14 @@ public class BasicRxUsages {
                 // Retry operation above when Runtime
                 // Exception happened. In other cases
                 // fallback into subscribers's onError
+                // TODO: think again about retryWhen usages
+                // According to this discussion:
+                // https://github.com/ReactiveX/RxJava/issues/4207
+                // This operator is not good enough, so I will leave
+                // it here for now, but later this part need to be
+                // refactored. Also, retry always causing re-subscription
+                // on the top of chain again and restart everything
+                // from scrtach, so be careful.
                 .retryWhen(observable -> observable.flatMap(throwable -> {
                     if ((throwable instanceof RuntimeException)) {
                         Logger.d("RETRY: Point #2");
@@ -374,7 +382,7 @@ public class BasicRxUsages {
         return new Person("Aaaaa" + num, "Bbbbb" + num, num, personAddress);
     }
 
-    private static Person getNewPersonOrError(int num) throws IOException, InterruptedException {
+    public static Person getNewPersonOrError(int num) throws IOException, InterruptedException {
         longRunningTaskSimulationOrError("getNewPersonOrError");
 
         PersonAddressStreet personAddressStreet = new PersonAddressStreet("Ccccc" + num);
@@ -388,7 +396,7 @@ public class BasicRxUsages {
         return new Person.Settings(person);
     }
 
-    private static Person.Settings fetchPersonSettingsOrError(Person person) throws IOException, InterruptedException {
+    public static Person.Settings fetchPersonSettingsOrError(Person person) throws IOException, InterruptedException {
         longRunningTaskSimulationOrError("fetchPersonSettingsOrError");
 
         return new Person.Settings(person);
@@ -404,7 +412,7 @@ public class BasicRxUsages {
         return messages;
     }
 
-    private static ArrayList<Person.Message> fetchPersonMessagesOrError(Person person) throws IOException, InterruptedException {
+    public static ArrayList<Person.Message> fetchPersonMessagesOrError(Person person) throws IOException, InterruptedException {
         longRunningTaskSimulationOrError("fetchPersonMessagesOrError");
 
         ArrayList<Person.Message> messages = new ArrayList<>();
