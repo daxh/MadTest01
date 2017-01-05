@@ -36,17 +36,18 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.exceptions.Exceptions;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
 
 public class RxUiActivity extends AppCompatActivity{
 
     public static final int TOTAL_MASKED_PHONE_LENGTH = 16;
     public static final int GET_NEW_PRSN_MAX_RETRIES = 10;
 
-    Optional<Button> btStart = Optional.empty();
-    Optional<EditText> etPhoneNumber = Optional.empty();
-    Optional<TextView> tvLog = Optional.empty();
-    Optional<ScrollView> svLog = Optional.empty();
-    Optional<ProgressBar> pbLoading = Optional.empty();
+    private Optional<Button> btStart = Optional.empty();
+    private Optional<EditText> etPhoneNumber = Optional.empty();
+    private Optional<TextView> tvLog = Optional.empty();
+    private Optional<ScrollView> svLog = Optional.empty();
+    private Optional<ProgressBar> pbLoading = Optional.empty();
 
     // We using subjects to simplify calls to UI
     // from other threads, when this is need to be
@@ -54,7 +55,8 @@ public class RxUiActivity extends AppCompatActivity{
     // partially switch thread for this operator.
     // More could be found here
     // https://groups.google.com/forum/#!topic/rxjava/TCGBiT0gbyI
-    PublishSubject<String> sbjLog = PublishSubject.create();
+    private PublishSubject<String> sbjLog = PublishSubject.create();
+    private CompositeSubscription cmpstSbscrpn;
 
     Function<CharSequence, Boolean> checkSymbolRedundancy = cs -> cs.length() > TOTAL_MASKED_PHONE_LENGTH;
     Function<CharSequence, Boolean> checkPhoneСompleteness = cs -> cs.length() == TOTAL_MASKED_PHONE_LENGTH;
@@ -65,38 +67,47 @@ public class RxUiActivity extends AppCompatActivity{
         setContentView(R.layout.activity_rx_ui);
         LoggerUtils.explicit(7);
 
-        sbjLog
+        cmpstSbscrpn = new CompositeSubscription();
+
+        cmpstSbscrpn.add(sbjLog
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::appendToLog);
+                .subscribe(this::appendToLog));
 
         btStart = Optional.ofNullable((Button)findViewById(R.id.btStart))
-                .executeIfPresent(view -> RxView.clicks(view)
-                .subscribe(aVoid -> runLrtWithRx()));
+                .executeIfPresent(view -> cmpstSbscrpn.add(
+                        RxView.clicks(view).subscribe(aVoid -> runLrtWithRx())));
 
         etPhoneNumber = Optional.ofNullable((EditText) findViewById(R.id.etPhoneNumber))
                 .executeIfPresent(editText -> {
-                    RxTextView.textChangeEvents(editText).subscribe(event -> {
+                    cmpstSbscrpn.add(RxTextView.textChangeEvents(editText).subscribe(event -> {
                         btStart.executeIfPresent(bt -> bt.setEnabled(checkPhoneСompleteness.apply(event.text())));
-                    });
+                    }));
 
-                    RxTextView.editorActionEvents(editText).subscribe(event -> {
+                    cmpstSbscrpn.add(RxTextView.editorActionEvents(editText).subscribe(event -> {
                         if (event.actionId() == EditorInfo.IME_ACTION_DONE) {
                             runLrtWithRx();
                         }
-                    });
+                    }));
 
                     setupPhoneNumberInputMask(editText);
                 });
 
         svLog = Optional.ofNullable((ScrollView) findViewById(R.id.svLog));
         tvLog = Optional.ofNullable((TextView) findViewById(R.id.tvLog));
-            tvLog.ifPresent(tv -> RxView.globalLayouts(tv).subscribe(aVoid -> svLog.get().fullScroll(View.FOCUS_DOWN)));
+            tvLog.ifPresent(tv -> cmpstSbscrpn.add(RxView.globalLayouts(tv).subscribe(aVoid -> svLog.get().fullScroll(View.FOCUS_DOWN))));
         pbLoading = Optional.ofNullable((ProgressBar) findViewById(R.id.pbLoading));
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        cmpstSbscrpn.unsubscribe();
+    }
+
     private void runLrtWithRx() {
-        Observable
+        cmpstSbscrpn.add(Observable
                 // This operator accepts Callable.call function
                 // that rethrows checked exceptions that's why
                 // we don't need any additional try/catch blocks
@@ -153,7 +164,7 @@ public class RxUiActivity extends AppCompatActivity{
                 // This let us to handle errors and restart(
                 // resubscribe) only in this sub-chain without
                 // even touching the main chain.
-                .doOnNext(person -> Observable.fromCallable(() -> {
+                .doOnNext(person -> cmpstSbscrpn.add(Observable.fromCallable(() -> {
                             // Still Thread: Main
                             // Demonstration how different exceptions could
                             // be handled in Observable.fromCallable calls
@@ -240,7 +251,7 @@ public class RxUiActivity extends AppCompatActivity{
                         .subscribe(
                                 result -> appendToLog("onNext1: " + result),
                                 throwable -> appendToLog("onError1: " + throwable.getLocalizedMessage()),
-                                () -> appendToLog("onCompleted1"))
+                                () -> appendToLog("onCompleted1")))
                 )
                 // Switching to Thread: Io
                 .observeOn(Schedulers.io())
@@ -251,6 +262,7 @@ public class RxUiActivity extends AppCompatActivity{
                         // There is no clean way to do something on UI
                         // thread just using operators, so in this specific
                         // case it is possible to use subjects
+
                         Observable
                                 .fromCallable(() -> BasicRxUsages.fetchPersonSettingsOrError(person))
                                 .doOnSubscribe(() -> sbjLog.onNext("fetchPersonSettingsOrError"))
@@ -292,7 +304,7 @@ public class RxUiActivity extends AppCompatActivity{
                             appendToLog("onCompleted2");
                             showProgress(false);
                         }
-                );
+                ));
     }
 
     private void appendToLog(String s) {
@@ -326,18 +338,18 @@ public class RxUiActivity extends AppCompatActivity{
         // Just for logging and this is really
         // convenient, because we could keep it
         // separately avoiding noise in code
-        before.subscribe(e -> {
+        cmpstSbscrpn.add(before.subscribe(e -> {
             Logger.d("before text = %s\tstart = %d\tcount = %d\tafter = %d", e.text(), e.start(), e.count(), e.after());
-        });
-        on.subscribe(e -> {
+        }));
+        cmpstSbscrpn.add(on.subscribe(e -> {
             Logger.d("on text = %s\tstart = %d\tbefore = %d\tcount = %d", e.text(), e.start(), e.before(), e.count());
-        });
-        after.subscribe(e -> {
+        }));
+        cmpstSbscrpn.add(after.subscribe(e -> {
             Logger.d("after text = %s", e.editable().toString());
-        });
+        }));
 
         // Magic starts here
-        Observable.zip(
+        cmpstSbscrpn.add(Observable.zip(
                 before.flatMap(e -> Observable.just(
                         // It is vitally important to use String.valueOf
                         // here because this allows us to keep text in a
@@ -413,7 +425,7 @@ public class RxUiActivity extends AppCompatActivity{
                         Editable text = pair.second.editable();
                         text.delete(text.length()-1,text.length());
                     }
-                }, Throwable::printStackTrace);
+                }, Throwable::printStackTrace));
     }
 
     class MyException extends RuntimeException {
