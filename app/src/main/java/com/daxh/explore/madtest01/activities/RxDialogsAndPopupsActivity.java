@@ -23,6 +23,7 @@ import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 import com.trello.rxlifecycle.components.support.RxAppCompatDialogFragment;
 
 import rx.Observable;
+import rx.functions.Action1;
 import rx.subscriptions.Subscriptions;
 
 // This example is based on the following article:
@@ -51,14 +52,14 @@ public class RxDialogsAndPopupsActivity extends RxAppCompatActivity {
                         .subscribe(s -> Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show()));
 
         btSwitch = Optional.ofNullable((Button)findViewById(R.id.btSwitch))
-                .executeIfPresent(bt -> bt.setOnClickListener(view -> showPopup(view, R.menu.menu_switch)));
+                .executeIfPresent(bt -> bt.setOnClickListener(view -> showPopup(view, R.menu.menu_switch, this::switchPopupMenuItemClicked)));
     }
 
-    private void showPopup(View view, int menuId) {
+    private void showPopup(View view, int menuId, Action1<MenuItem> popupMenuItemClicked) {
         final PopupMenu menu = new PopupMenu(this, view);
         menu.inflate(menuId);
         menu.setOnMenuItemClickListener(item -> {
-            switchPopupMenuItemClicked(item);
+            popupMenuItemClicked.call(item);
             return true;
         });
         menu.show();
