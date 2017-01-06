@@ -39,6 +39,7 @@ public class RxDialogsAndPopupsActivity extends RxAppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rx_dialogs);
 
+        // Rx Style
         btStart = Optional.ofNullable((Button)findViewById(R.id.btStart))
                 .executeIfPresent(view -> RxView.clicks(view)
                         .flatMap(aVoid -> RxSigninDialog.create((String) view.getText(), getSupportFragmentManager(), "dlg"))
@@ -51,18 +52,48 @@ public class RxDialogsAndPopupsActivity extends RxAppCompatActivity {
                         .compose(bindToLifecycle())
                         .subscribe(s -> Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show()));
 
+//        // Old style
+//        btSwitch = Optional.ofNullable((Button)findViewById(R.id.btSwitch))
+//                .executeIfPresent(bt -> bt.setOnClickListener(view -> showPopup(view, R.menu.menu_switch, this::switchPopupMenuItemClicked)));
+
+        // Rx Style
         btSwitch = Optional.ofNullable((Button)findViewById(R.id.btSwitch))
-                .executeIfPresent(bt -> bt.setOnClickListener(view -> showPopup(view, R.menu.menu_switch, this::switchPopupMenuItemClicked)));
+                .executeIfPresent(bt -> RxView.clicks(bt)
+                        .flatMap(aVoid -> showPopupAsObservable(bt, R.menu.menu_switch))
+                        .compose(bindToLifecycle())
+                        .subscribe(this::switchPopupMenuItemClicked));
     }
 
-    private void showPopup(View view, int menuId, Action1<MenuItem> popupMenuItemClicked) {
-        final PopupMenu menu = new PopupMenu(this, view);
-        menu.inflate(menuId);
-        menu.setOnMenuItemClickListener(item -> {
-            popupMenuItemClicked.call(item);
-            return true;
+//    private void showPopup(View view, int menuId, Action1<MenuItem> popupMenuItemClicked) {
+//        final PopupMenu menu = new PopupMenu(this, view);
+//        menu.inflate(menuId);
+//        menu.setOnMenuItemClickListener(item -> {
+//            popupMenuItemClicked.call(item);
+//            return true;
+//        });
+//        menu.show();
+//    }
+
+    private Observable<MenuItem> showPopupAsObservable(View view, int menuId) {
+        return Observable.create(subscriber -> {
+            final PopupMenu menu = new PopupMenu(this, view);
+            menu.inflate(menuId);
+
+            // cleaning up in case of unsubscribe() call
+            subscriber.add(Subscriptions.create(() -> {
+                menu.setOnMenuItemClickListener(null);
+                menu.dismiss();
+            }));
+
+            menu.setOnMenuItemClickListener(item -> {
+                subscriber.onNext(item);
+                // PopupMenu always emits exactly one item
+                subscriber.onCompleted();
+                return true;
+            });
+
+            menu.show();
         });
-        menu.show();
     }
 
     private void switchPopupMenuItemClicked(MenuItem item) {
