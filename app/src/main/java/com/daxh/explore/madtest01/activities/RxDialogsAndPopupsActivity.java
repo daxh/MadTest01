@@ -26,7 +26,7 @@ import rx.subscriptions.Subscriptions;
 // This example is based on the following article:
 // http://adelnizamutdinov.github.io/blog/2014/11/23/advanced-rxjava-on-android-popupmenus-and-dialogs/
 
-public class RxDialogsActivity extends RxAppCompatActivity {
+public class RxDialogsAndPopupsActivity extends RxAppCompatActivity {
 
     private Optional<Button> btStart = Optional.empty();
 
