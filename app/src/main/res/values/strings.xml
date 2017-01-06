@@ -44,8 +44,12 @@
     <string name="hint_phone_number">Phone number: +X(XXX)XXX-XX-XX</string>
     <string name="bt_start">START</string>
     <string name="signin">Sign In</string>
-    <string name="cancel">Cancel</string>
+    <string name="login">Log In</string>
+    <string name="reset">Reset</string>
+    <string name="bt_cancel">Cancel</string>
     <string name="hint_first_name">First Name</string>
     <string name="hint_last_name">Last Name</string>
     <string name="signin_dialog_purpose">No real request will be sent. This is just a demo, you could check sources and make sure.</string>
+    <string name="bt_switch"><![CDATA[</>]]></string>
+    <string name="bt_ok">Ok</string>
 </resources>

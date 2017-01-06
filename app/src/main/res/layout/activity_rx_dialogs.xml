@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
@@ -13,8 +13,10 @@
     tools:context="com.daxh.explore.madtest01.activities.MainActivity">
 
     <TextView
+        android:id="@+id/tvPurpose"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
         android:text="@string/rx_dialogs_activity_purpose"/>
 
@@ -22,6 +24,19 @@
         android:id="@+id/btStart"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/bt_start"/>
+        android:layout_below="@+id/tvPurpose"
+        android:layout_toLeftOf="@+id/btSwitch"
+        android:layout_toStartOf="@+id/btSwitch"
+        android:text="@string/signin"/>
 
-</LinearLayout>
+    <Button
+        android:id="@+id/btSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvPurpose"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:minWidth="20dp"
+        android:text="@string/bt_switch"/>
+
+</RelativeLayout>

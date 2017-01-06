@@ -7,7 +7,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.PopupMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -29,6 +31,7 @@ import rx.subscriptions.Subscriptions;
 public class RxDialogsAndPopupsActivity extends RxAppCompatActivity {
 
     private Optional<Button> btStart = Optional.empty();
+    private Optional<Button> btSwitch = Optional.empty();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -37,7 +40,7 @@ public class RxDialogsAndPopupsActivity extends RxAppCompatActivity {
 
         btStart = Optional.ofNullable((Button)findViewById(R.id.btStart))
                 .executeIfPresent(view -> RxView.clicks(view)
-                        .flatMap(aVoid -> RxSigninDialog.create("Time to Sign In", getSupportFragmentManager(), "dlg"))
+                        .flatMap(aVoid -> RxSigninDialog.create((String) view.getText(), getSupportFragmentManager(), "dlg"))
                         .flatMap(dialogRes -> Observable.just(
                                 Optional.ofNullable(dialogRes)
                                     .flatMap(pairName -> Optional.of("Entered: " + pairName.first + " " + pairName.second))
@@ -46,6 +49,33 @@ public class RxDialogsAndPopupsActivity extends RxAppCompatActivity {
                         )
                         .compose(bindToLifecycle())
                         .subscribe(s -> Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show()));
+
+        btSwitch = Optional.ofNullable((Button)findViewById(R.id.btSwitch))
+                .executeIfPresent(bt -> bt.setOnClickListener(view -> showPopup(view, R.menu.menu_switch)));
+    }
+
+    private void showPopup(View view, int menuId) {
+        final PopupMenu menu = new PopupMenu(this, view);
+        menu.inflate(menuId);
+        menu.setOnMenuItemClickListener(item -> {
+            switchPopupMenuItemClicked(item);
+            return true;
+        });
+        menu.show();
+    }
+
+    private void switchPopupMenuItemClicked(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.miSignin:
+                btStart.ifPresent(bt -> bt.setText(R.string.signin));
+                break;
+            case R.id.miLogin:
+                btStart.ifPresent(bt -> bt.setText(R.string.login));
+                break;
+            case R.id.miReset:
+                btStart.ifPresent(bt -> bt.setText(R.string.reset));
+                break;
+        }
     }
 
     public static class SignDialog extends RxAppCompatDialogFragment {
@@ -92,13 +122,13 @@ public class RxDialogsAndPopupsActivity extends RxAppCompatActivity {
 
                 builder.setView(v)
                         // Add action buttons
-                        .setPositiveButton(R.string.signin, (dialog, id) -> {
+                        .setPositiveButton(R.string.bt_ok, (dialog, id) -> {
                             // sign in the user ...
                             listener.ifPresent(l -> l.onEntered(
                                             etFirstName.flatMap(et -> Optional.ofNullable(et.getText().toString())).orElse(""),
                                             etLastName.flatMap(et -> Optional.ofNullable(et.getText().toString())).orElse("")));
                         })
-                        .setNegativeButton(R.string.cancel, (dialog, id) -> {
+                        .setNegativeButton(R.string.bt_cancel, (dialog, id) -> {
                             listener.ifPresent(Listener::onCanceled);
                         });
             });
