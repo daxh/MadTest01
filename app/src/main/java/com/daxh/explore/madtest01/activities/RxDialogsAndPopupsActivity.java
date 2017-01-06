@@ -23,7 +23,6 @@ import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 import com.trello.rxlifecycle.components.support.RxAppCompatDialogFragment;
 
 import rx.Observable;
-import rx.functions.Action1;
 import rx.subscriptions.Subscriptions;
 
 // This example is based on the following article:
@@ -37,7 +36,7 @@ public class RxDialogsAndPopupsActivity extends RxAppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_rx_dialogs);
+        setContentView(R.layout.activity_rx_dialogs_and_popups);
 
         // Rx Style
         btStart = Optional.ofNullable((Button)findViewById(R.id.btStart))
