@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/miSignin"
+        android:title="@string/signin"/>
+    <item
+        android:id="@+id/miLogin"
+        android:title="Log In"/>
+    <item
+        android:id="@+id/miReset"
+        android:title="Reset"/>
+</menu>

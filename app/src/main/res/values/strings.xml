@@ -28,11 +28,28 @@
     <string name="bt_downstream_all_exceptions_to_subscriber">DOWNSTREAM ALL EXCEPTIONS TO SUBSCRIBER</string>
     <string name="bt_detailed_error_handling">DETAILED ERROR HANDLING</string>
     <string name="bt_rx_and_ui">RX &amp; UI</string>
+    <string name="bt_rx_dialogs_and_popups">RX, Dialogs &amp; Popups</string>
     <string name="rx_ui_activity_purpose">The purpose of this activity is to understand
         how we could combine Rx and such common UI tasks as clicks, text editing,
         showing progress and so on. Also we need to take into consideration such aspects
         as Rx and memory/context leaking. Right now we not taking into consideration
-        Rx and restoration of view states or background tasks on configuration changes</string>
+        Rx and restoration of view states or background tasks on configuration changes.</string>
+    <string name="rx_dialogs_activity_purpose">The purpose of this activity is to understand
+        how we could combine Rx and such common UI tasks as show dialogs and popup menus. Also we
+        need to take into consideration such aspects as Rx and memory/context leaking. Right now
+        we not taking into consideration Rx and restoration of view states or background tasks on
+        configuration changes. And it is highly desirable to be able to incorporate all dialogs/popups
+        stuff right into Rx chains.
+    </string>
     <string name="hint_phone_number">Phone number: +X(XXX)XXX-XX-XX</string>
     <string name="bt_start">START</string>
+    <string name="signin">Sign In</string>
+    <string name="login">Log In</string>
+    <string name="reset">Reset</string>
+    <string name="bt_cancel">Cancel</string>
+    <string name="hint_first_name">First Name</string>
+    <string name="hint_last_name">Last Name</string>
+    <string name="signin_dialog_purpose">No real request will be sent. This is just a demo, you could check sources and make sure.</string>
+    <string name="bt_switch"><![CDATA[</>]]></string>
+    <string name="bt_ok">Ok</string>
 </resources>

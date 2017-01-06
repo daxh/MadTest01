@@ -86,7 +86,6 @@ public class RxUiActivity extends RxAppCompatActivity {
         setContentView(R.layout.activity_rx_ui);
         LoggerUtils.explicit(7);
 
-
         sbjLog
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(AndroidSchedulers.mainThread())
