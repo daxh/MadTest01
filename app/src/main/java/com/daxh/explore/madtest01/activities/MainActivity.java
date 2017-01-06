@@ -22,5 +22,6 @@ public class MainActivity extends AppCompatActivity {
         bindButton(this, R.id.btStreams, () -> new Intent(this, StreamsUsagesActivity.class));
         bindButton(this, R.id.btBasicRx, () -> new Intent(this, BasicRxUsagesActivity.class));
         bindButton(this, R.id.btRxAndUI, () -> new Intent(this, RxUiActivity.class));
+        bindButton(this, R.id.btRxAndDialogs, () -> new Intent(this, RxDialogsActivity.class));
     }
 }
