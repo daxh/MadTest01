@@ -18,6 +18,10 @@
     <string name="bt_make_everyone_older_show_int_stream_ages">MAKE EVERYONE OLDER AND SHOW AGES AS INT STREAM</string>
     <string name="bt_average_age">CALCULATE AVERAGE AGE</string>
     <string name="title_lambdas_usages">Lambdas Usages</string>
+    <string name="title_memory_leaks">Memory Leaks</string>
+    <string name="title_rx_dialogs_and_popups_usages">RX, Dialogs &amp; Popups</string>
+    <string name="title_rx_and_ui">RX &amp; UI</string>
+    <string name="title_rx_usages">Basic Rx Usages</string>
     <string name="bt_lambdas_as_variables">LAMBDAS AS VARIABLES</string>
     <string name="bt_lambdas_and_classes">LAMBDAS AND CLASSES</string>
     <string name="bt_lambdas_as_args">LAMBDAS AS ARGS</string>
@@ -52,4 +56,5 @@
     <string name="signin_dialog_purpose">No real request will be sent. This is just a demo, you could check sources and make sure.</string>
     <string name="bt_switch"><![CDATA[</>]]></string>
     <string name="bt_ok">Ok</string>
+    <string name="bt_memory_leaks">Memory leaks</string>
 </resources>
