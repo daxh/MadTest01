@@ -117,7 +117,7 @@ public class RxDialogsAndPopupsActivity extends RxAppCompatActivity {
         Optional<EditText> etFirstName = Optional.empty();
         Optional<EditText> etLastName = Optional.empty();
 
-        Optional<Listener> listener;
+        Optional<Listener> listener = Optional.empty();
 
         public static SignDialog create(String title, Listener listener){
             SignDialog signDialog = new SignDialog();
