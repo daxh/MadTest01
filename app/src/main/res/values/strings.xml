@@ -45,8 +45,19 @@
         configuration changes. And it is highly desirable to be able to incorporate all dialogs/popups
         stuff right into Rx chains.
     </string>
+    <string name="memory_leak_activity_purpose">The purpose of this activity is to compare 3 approaches
+        for long running tasks (lrt) execution and to see and find the most safe and convenient from
+        memory leaking safety point of view. For this time we taking into consideration android configuration
+        changes but until it is necessary to demonstrate memory leak itself and how to overcome it. So,
+        we still not taking into consideration Rx and restoration of view states or background tasks on
+        configuration changes.\nJust push any button to start task and then rotate screen or exit activity.
+        Repeat it few times until you see a notification from LeakCanary.
+    </string>
     <string name="hint_phone_number">Phone number: +X(XXX)XXX-XX-XX</string>
     <string name="bt_start">START</string>
+    <string name="bt_start_async_task">START ASYNC TASK</string>
+    <string name="bt_start_unsafe_rx_task">START UNSAFE RX TASK</string>
+    <string name="bt_start_safe_rx_task">START SAFE RX TASK</string>
     <string name="signin">Sign In</string>
     <string name="login">Log In</string>
     <string name="reset">Reset</string>

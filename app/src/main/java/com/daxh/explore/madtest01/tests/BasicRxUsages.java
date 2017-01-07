@@ -374,7 +374,7 @@ public class BasicRxUsages {
         Logger.d("Point #5.2");
     }
 
-    private static Person getNewPerson(int num){
+    public static Person getNewPerson(int num){
         longRunningTaskSimulation("getNewPerson");
 
         PersonAddressStreet personAddressStreet = new PersonAddressStreet("Ccccc" + num);
