@@ -73,4 +73,11 @@ dependencies {
     compile 'com.trello:rxlifecycle:1.0'
     compile 'com.trello:rxlifecycle-android:1.0'
     compile 'com.trello:rxlifecycle-components:1.0'
+
+    // Leak Canary
+    // This wonderful library allows to track any
+    // activity leaks.
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
+    testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
 }
