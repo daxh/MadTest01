@@ -56,8 +56,8 @@
     <string name="hint_phone_number">Phone number: +X(XXX)XXX-XX-XX</string>
     <string name="bt_start">START</string>
     <string name="bt_start_async_task">START ASYNC TASK</string>
-    <string name="bt_start_unsafe_rx_task">START UNSAFE RX TASK</string>
-    <string name="bt_start_safe_rx_task">START SAFE RX TASK</string>
+    <string name="bt_start_leakable_rx_task">START LEAKABLE RX TASK</string>
+    <string name="bt_start_unleakable_rx_task">START UNLEAKABLE RX TASK</string>
     <string name="signin">Sign In</string>
     <string name="login">Log In</string>
     <string name="reset">Reset</string>

@@ -26,16 +26,16 @@
         android:text="@string/bt_start_async_task"/>
 
     <Button
-        android:id="@+id/btStartUnsafeRxTask"
+        android:id="@+id/btStartLeakableRxTask"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/bt_start_unsafe_rx_task"/>
+        android:text="@string/bt_start_leakable_rx_task"/>
 
     <Button
-        android:id="@+id/btStartSafeRxTask"
+        android:id="@+id/btStartUnleakableRxTask"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/bt_start_safe_rx_task"/>
+        android:text="@string/bt_start_unleakable_rx_task"/>
 
     <ProgressBar
         android:id="@+id/pbLoading"
