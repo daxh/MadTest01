@@ -18,6 +18,10 @@
     <string name="bt_make_everyone_older_show_int_stream_ages">MAKE EVERYONE OLDER AND SHOW AGES AS INT STREAM</string>
     <string name="bt_average_age">CALCULATE AVERAGE AGE</string>
     <string name="title_lambdas_usages">Lambdas Usages</string>
+    <string name="title_memory_leaks">Memory Leaks</string>
+    <string name="title_rx_dialogs_and_popups_usages">RX, Dialogs &amp; Popups</string>
+    <string name="title_rx_and_ui">RX &amp; UI</string>
+    <string name="title_rx_usages">Basic Rx Usages</string>
     <string name="bt_lambdas_as_variables">LAMBDAS AS VARIABLES</string>
     <string name="bt_lambdas_and_classes">LAMBDAS AND CLASSES</string>
     <string name="bt_lambdas_as_args">LAMBDAS AS ARGS</string>
@@ -31,8 +35,8 @@
     <string name="bt_rx_dialogs_and_popups">RX, Dialogs &amp; Popups</string>
     <string name="rx_ui_activity_purpose">The purpose of this activity is to understand
         how we could combine Rx and such common UI tasks as clicks, text editing,
-        showing progress and so on. Also we need to take into consideration such aspects
-        as Rx and memory/context leaking. Right now we not taking into consideration
+        showing progress and so on. We not taking into consideration such aspects
+        as Rx and memory/context leaking. Also, right now we not taking into consideration
         Rx and restoration of view states or background tasks on configuration changes.</string>
     <string name="rx_dialogs_activity_purpose">The purpose of this activity is to understand
         how we could combine Rx and such common UI tasks as show dialogs and popup menus. Also we
@@ -41,8 +45,19 @@
         configuration changes. And it is highly desirable to be able to incorporate all dialogs/popups
         stuff right into Rx chains.
     </string>
+    <string name="memory_leak_activity_purpose">The purpose of this activity is to compare 3 approaches
+        for long running tasks (lrt) execution and to see and find the most safe and convenient from
+        memory leaking safety point of view. For this time we taking into consideration android configuration
+        changes but until it is necessary to demonstrate memory leak itself and how to overcome it. So,
+        we still not taking into consideration Rx and restoration of view states or background tasks on
+        configuration changes.\nJust push any button to start task and then rotate screen or exit activity.
+        Repeat it few times until you see a notification from LeakCanary.
+    </string>
     <string name="hint_phone_number">Phone number: +X(XXX)XXX-XX-XX</string>
     <string name="bt_start">START</string>
+    <string name="bt_start_async_task">START ASYNC TASK</string>
+    <string name="bt_start_leakable_rx_task">START LEAKABLE RX TASK</string>
+    <string name="bt_start_unleakable_rx_task">START UNLEAKABLE RX TASK</string>
     <string name="signin">Sign In</string>
     <string name="login">Log In</string>
     <string name="reset">Reset</string>
@@ -52,4 +67,5 @@
     <string name="signin_dialog_purpose">No real request will be sent. This is just a demo, you could check sources and make sure.</string>
     <string name="bt_switch"><![CDATA[</>]]></string>
     <string name="bt_ok">Ok</string>
+    <string name="bt_rx_and_memory_leaks">RX &amp; Memory Leaks</string>
 </resources>
