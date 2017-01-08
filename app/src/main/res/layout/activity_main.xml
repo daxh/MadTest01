@@ -49,9 +49,9 @@
         android:text="@string/bt_rx_dialogs_and_popups"/>
 
     <Button
-        android:id="@+id/btLeak"
+        android:id="@+id/btRxAndMemoryLeaks"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/bt_memory_leaks"/>
+        android:text="@string/bt_rx_and_memory_leaks"/>
 
 </LinearLayout>

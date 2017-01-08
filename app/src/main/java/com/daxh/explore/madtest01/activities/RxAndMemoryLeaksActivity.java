@@ -42,7 +42,7 @@ import rx.schedulers.Schedulers;
 // with un-subscribe, then implement it manually (using
 // Composite Subscription). More info could be found here:
 // https://github.com/trello/RxLifecycle
-public class LeakActivity extends RxAppCompatActivity {
+public class RxAndMemoryLeaksActivity extends RxAppCompatActivity {
 
     private Optional<ProgressBar> pbLoading = Optional.empty();
 

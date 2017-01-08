@@ -42,7 +42,7 @@
             android:label="@string/title_rx_dialogs_and_popups_usages"/>
 
         <activity
-            android:name=".activities.LeakActivity"
+            android:name=".activities.RxAndMemoryLeaksActivity"
             android:label="@string/title_memory_leaks"/>
 
     </application>
