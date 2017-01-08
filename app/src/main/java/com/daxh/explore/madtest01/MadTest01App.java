@@ -20,7 +20,7 @@ public class MadTest01App extends Application {
         refWatcher = LeakCanary.install(this);
     }
 
-    public RefWatcher getRefWatcher() {
-        return refWatcher;
+    public void watch(Object o) {
+        refWatcher.watch(o);
     }
 }
