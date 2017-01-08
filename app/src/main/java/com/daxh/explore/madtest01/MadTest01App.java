@@ -3,8 +3,11 @@ package com.daxh.explore.madtest01;
 import android.app.Application;
 
 import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.RefWatcher;
 
 public class MadTest01App extends Application {
+
+    private RefWatcher refWatcher;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -14,6 +17,10 @@ public class MadTest01App extends Application {
             // You should not init your app in this process.
             return;
         }
-        LeakCanary.install(this);
+        refWatcher = LeakCanary.install(this);
+    }
+
+    public RefWatcher getRefWatcher() {
+        return refWatcher;
     }
 }
