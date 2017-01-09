@@ -3,6 +3,7 @@ package com.daxh.explore.madtest01.activities;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.view.View;
@@ -25,7 +26,6 @@ import com.jakewharton.rxbinding.widget.TextViewAfterTextChangeEvent;
 import com.jakewharton.rxbinding.widget.TextViewBeforeTextChangeEvent;
 import com.jakewharton.rxbinding.widget.TextViewTextChangeEvent;
 import com.orhanobut.logger.Logger;
-import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,28 +37,7 @@ import rx.exceptions.Exceptions;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
-// We use RxAppCompatActivity to automatically mange subscriptions
-// and prevent memory / context leaks due to configuration changes
-// events and other related android 'goodies'. RxLifecycle provides
-// all necessary base classes to handle these stuff (RxActivity,
-// RxAppCompatActivity, RxFragment, RxAppCompatFragment, dialogs and
-// even ability to implements all that stuff manually if out of the
-// box solution does not fit your needs). Of course it is possible
-// to manage all this stuff manually (using CompositeSubscription)
-// like in previous commit, like, for example here:
-// http://blog.danlew.net/2014/10/08/grokking-rxjava-part-4/
-// ... starting from  'The second problem can be solved by properly'.
-// But according to this note
-// https://groups.google.com/forum/#!topic/rxjava/77pCKg2iHEk
-// in a complex case at some moment you will start to re-invent things
-// already implemented in RxLifecycle. Moreover, there is no reason
-// why you can't combine both approaches.
-// IMPORTANT: RxLifecycle does not actually unsubscribe the sequence.
-// Instead it terminates the sequence. So, if you really need behavior
-// with un-subscribe, then implement it manually (using
-// Composite Subscription). More info could be found here:
-// https://github.com/trello/RxLifecycle
-public class RxUiActivity extends RxAppCompatActivity {
+public class RxUiActivity extends AppCompatActivity {
 
     public static final int TOTAL_MASKED_PHONE_LENGTH = 16;
     public static final int GET_NEW_PRSN_MAX_RETRIES = 10;
@@ -86,23 +65,21 @@ public class RxUiActivity extends RxAppCompatActivity {
         setContentView(R.layout.activity_rx_ui);
         LoggerUtils.explicit(7);
 
-
         sbjLog
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .compose(bindToLifecycle())  // bind subscription to RxLifecycle
                 .subscribe(this::appendToLog);
 
         btStart = Optional.ofNullable((Button)findViewById(R.id.btStart))
-                .executeIfPresent(view -> RxView.clicks(view).compose(bindToLifecycle()).subscribe(aVoid -> runLrtWithRx()));
+                .executeIfPresent(view -> RxView.clicks(view).subscribe(aVoid -> runLrtWithRx()));
 
         etPhoneNumber = Optional.ofNullable((EditText) findViewById(R.id.etPhoneNumber))
                 .executeIfPresent(editText -> {
-                    RxTextView.textChangeEvents(editText).compose(bindToLifecycle()).subscribe(event -> {
+                    RxTextView.textChangeEvents(editText).subscribe(event -> {
                         btStart.executeIfPresent(bt -> bt.setEnabled(checkPhoneСompleteness.apply(event.text())));
                     });
 
-                    RxTextView.editorActionEvents(editText).compose(bindToLifecycle()).subscribe(event -> {
+                    RxTextView.editorActionEvents(editText).subscribe(event -> {
                         if (event.actionId() == EditorInfo.IME_ACTION_DONE) {
                             runLrtWithRx();
                         }
@@ -113,7 +90,7 @@ public class RxUiActivity extends RxAppCompatActivity {
 
         svLog = Optional.ofNullable((ScrollView) findViewById(R.id.svLog));
         tvLog = Optional.ofNullable((TextView) findViewById(R.id.tvLog));
-            tvLog.ifPresent(tv -> RxView.globalLayouts(tv).compose(bindToLifecycle()).subscribe(aVoid -> svLog.get().fullScroll(View.FOCUS_DOWN)));
+            tvLog.ifPresent(tv -> RxView.globalLayouts(tv).subscribe(aVoid -> svLog.get().fullScroll(View.FOCUS_DOWN)));
         pbLoading = Optional.ofNullable((ProgressBar) findViewById(R.id.pbLoading));
     }
 
@@ -259,7 +236,6 @@ public class RxUiActivity extends RxAppCompatActivity {
                             appendToLog("DEFAULT1: falling back " + throwable.getLocalizedMessage());
                             return Observable.error(throwable); // error, no way to succeed
                         })
-                        .compose(bindToLifecycle())
                         .subscribe(
                                 result -> appendToLog("onNext1: " + result),
                                 throwable -> appendToLog("onError1: " + throwable.getLocalizedMessage()),
@@ -300,7 +276,6 @@ public class RxUiActivity extends RxAppCompatActivity {
                     appendToLog("Checking messages...");
                     return Observable.from(settingsMsgsListPair.second);
                 })
-                .compose(bindToLifecycle())
                 .subscribe(
                         // onNext
                         message -> appendToLog("onNext2: " + message.toString()),
@@ -351,13 +326,13 @@ public class RxUiActivity extends RxAppCompatActivity {
         // Just for logging and this is really
         // convenient, because we could keep it
         // separately avoiding noise in code
-        before.compose(bindToLifecycle()).subscribe(e -> {
+        before.subscribe(e -> {
             Logger.d("before text = %s\tstart = %d\tcount = %d\tafter = %d", e.text(), e.start(), e.count(), e.after());
         });
-        on.compose(bindToLifecycle()).subscribe(e -> {
+        on.subscribe(e -> {
             Logger.d("on text = %s\tstart = %d\tbefore = %d\tcount = %d", e.text(), e.start(), e.before(), e.count());
         });
-        after.compose(bindToLifecycle()).subscribe(e -> {
+        after.subscribe(e -> {
             Logger.d("after text = %s", e.editable().toString());
         });
 
@@ -426,7 +401,6 @@ public class RxUiActivity extends RxAppCompatActivity {
                     return Observable.just(new Pair<>(-1, ""));
                 })
                 .zipWith(after, Pair::create)
-                .compose(bindToLifecycle())
                 .subscribe(pair -> {
                     Logger.d("Point #6");
                     int idx = pair.first.first;

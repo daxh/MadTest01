@@ -3,6 +3,7 @@
           package="com.daxh.explore.madtest01">
 
     <application
+        android:name=".MadTest01App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -30,11 +31,19 @@
 
         <activity
             android:name=".activities.BasicRxUsagesActivity"
-            android:label="@string/title_lambdas_usages"/>
+            android:label="@string/title_rx_usages"/>
 
         <activity
             android:name=".activities.RxUiActivity"
-            android:label="@string/title_lambdas_usages"/>
+            android:label="@string/title_rx_and_ui"/>
+
+        <activity
+            android:name=".activities.RxDialogsAndPopupsActivity"
+            android:label="@string/title_rx_dialogs_and_popups_usages"/>
+
+        <activity
+            android:name=".activities.RxAndMemoryLeaksActivity"
+            android:label="@string/title_memory_leaks"/>
 
     </application>
 

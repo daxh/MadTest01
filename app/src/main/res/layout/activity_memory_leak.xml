@@ -2,6 +2,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:animateLayoutChanges="true"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,46 +13,36 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.daxh.explore.madtest01.activities.MainActivity">
 
-    <Button
-        android:id="@+id/btOptionals"
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/bt_optionals"/>
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+        android:text="@string/memory_leak_activity_purpose"/>
 
     <Button
-        android:id="@+id/btLambdas"
+        android:id="@+id/btStartAsyncTask"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/bt_lambdas"/>
+        android:text="@string/bt_start_async_task"/>
 
     <Button
-        android:id="@+id/btStreams"
+        android:id="@+id/btStartLeakableRxTask"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/bt_streams"/>
+        android:text="@string/bt_start_leakable_rx_task"/>
 
     <Button
-        android:id="@+id/btBasicRx"
+        android:id="@+id/btStartUnleakableRxTask"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/bt_basic_rx"/>
+        android:text="@string/bt_start_unleakable_rx_task"/>
 
-    <Button
-        android:id="@+id/btRxAndUI"
+    <ProgressBar
+        android:id="@+id/pbLoading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/bt_rx_and_ui"/>
-
-    <Button
-        android:id="@+id/btRxDialogsAndPopups"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/bt_rx_dialogs_and_popups"/>
-
-    <Button
-        android:id="@+id/btRxAndMemoryLeaks"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/bt_rx_and_memory_leaks"/>
+        android:indeterminate="true"
+        android:visibility="gone"
+        android:indeterminateOnly="true"/>
 
 </LinearLayout>
