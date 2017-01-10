@@ -46,7 +46,7 @@ dependencies {
     // This great lib provides access to some Java 8
     // features (like Optionals, Strem API) that by
     // default not available on Android
-    compile 'com.annimon:stream:1.1.2'
+    compile 'com.annimon:stream:1.1.4'
 
     // RxJava
     // Reactive Extensions for Java library itself.
