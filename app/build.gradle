@@ -63,9 +63,9 @@ dependencies {
     // RxBindings
     // Specific library that provides easier integration
     // between android UI and RxJava conceptions
-    compile 'com.jakewharton.rxbinding:rxbinding:0.4.0'
-    compile 'com.jakewharton.rxbinding:rxbinding-support-v4:0.4.0'
-    compile 'com.jakewharton.rxbinding:rxbinding-appcompat-v7:0.4.0'
+    compile 'com.jakewharton.rxbinding:rxbinding:1.0.0'
+    compile 'com.jakewharton.rxbinding:rxbinding-support-v4:1.0.0'
+    compile 'com.jakewharton.rxbinding:rxbinding-appcompat-v7:1.0.0'
 
     // RxLifeCycle
     // Specific library that provides easier integration
@@ -76,7 +76,7 @@ dependencies {
 
     // Leak Canary
     // This wonderful library allows to track any
-    // activity leaks.
+    // activity (and in general any memory) leaks.
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
     testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
