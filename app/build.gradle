@@ -46,13 +46,13 @@ dependencies {
     // This great lib provides access to some Java 8
     // features (like Optionals, Strem API) that by
     // default not available on Android
-    compile 'com.annimon:stream:1.1.2'
+    compile 'com.annimon:stream:1.1.4'
 
     // RxJava
     // Reactive Extensions for Java library itself.
     // Because RxAndroid releases are few and far between, it is recommended you also
     // explicitly depend on RxJava's latest version for bug fixes and new features.
-    compile 'io.reactivex:rxjava:1.1.6'
+    compile 'io.reactivex:rxjava:1.2.5'
     compile 'io.reactivex:rxjava-async-util:0.21.0'
 
     // RxAndroid
@@ -63,20 +63,20 @@ dependencies {
     // RxBindings
     // Specific library that provides easier integration
     // between android UI and RxJava conceptions
-    compile 'com.jakewharton.rxbinding:rxbinding:0.4.0'
-    compile 'com.jakewharton.rxbinding:rxbinding-support-v4:0.4.0'
-    compile 'com.jakewharton.rxbinding:rxbinding-appcompat-v7:0.4.0'
+    compile 'com.jakewharton.rxbinding:rxbinding:1.0.0'
+    compile 'com.jakewharton.rxbinding:rxbinding-support-v4:1.0.0'
+    compile 'com.jakewharton.rxbinding:rxbinding-appcompat-v7:1.0.0'
 
     // RxLifeCycle
     // Specific library that provides easier integration
-    // beyween Activity/Fragment lifecycle and RxJava
+    // between Activity/Fragment lifecycle and RxJava
     compile 'com.trello:rxlifecycle:1.0'
     compile 'com.trello:rxlifecycle-android:1.0'
     compile 'com.trello:rxlifecycle-components:1.0'
 
     // Leak Canary
     // This wonderful library allows to track any
-    // activity leaks.
+    // activity (and in general any memory) leaks.
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
     testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
